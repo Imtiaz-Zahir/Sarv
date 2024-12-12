@@ -1,0 +1,77 @@
+import Cloudflare from "cloudflare";
+import { randomBytes } from "crypto";
+
+function generateTunnelSecret(length: number = 32): string {
+  return randomBytes(length).toString("hex");
+}
+
+const apiEmail = process.env["CLOUDFLARE_EMAIL"];
+const apiKey = process.env["CLOUDFLARE_API_KEY"];
+const accountId = process.env["CLOUDFLARE_ACCOUNT_ID"];
+const zoneId = process.env["CLOUDFLARE_ZONE_ID"];
+
+if (!apiEmail) {
+  throw new Error("CLOUDFLARE_EMAIL is required");
+}
+
+if (!apiKey) {
+  throw new Error("CLOUDFLARE_API_KEY is required");
+}
+
+if (!accountId) {
+  throw new Error("CLOUDFLARE_ACCOUNT_ID is required");
+}
+
+if (!zoneId) {
+  throw new Error("CLOUDFLARE_ZONE_ID is required");
+}
+
+const client = new Cloudflare({
+  apiEmail,
+  apiKey,
+});
+
+export function createTunnel(name: string) {
+  return client.zeroTrust.tunnels.create({
+    account_id: accountId as string,
+    tunnel_secret: generateTunnelSecret(),
+    name,
+  });
+}
+
+export function createDnsRecord({
+  domainName,
+  hostname,
+}: {
+  domainName: string;
+  hostname: string;
+}) {
+  return client.dns.records.create({
+    type: "CNAME",
+    content: hostname,
+    name: domainName,
+    zone_id: zoneId as string,
+  });
+}
+
+export async function getConnections(tunnelId: string) {
+  return client.zeroTrust.tunnels.configurations.get(tunnelId, {
+    account_id: accountId as string,
+  });
+}
+
+export async function deleteConnection({
+  tunnelId,
+  domainName,
+}: {
+  tunnelId: string;
+  domainName: string;
+}) {
+  const connections = await getConnections(tunnelId);
+
+  console.log(connections);
+
+  return client.zeroTrust.tunnels.delete(tunnelId, {
+    account_id: accountId as string,
+  });
+}
