@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Button from "./Button";
 
 export default function Nav() {
+  const { data: session } = useSession();
+  console.log(session);
   const links = [
     { name: "Home", href: "/" },
     { name: "Subscription", href: "/subscription" },
@@ -13,7 +16,6 @@ export default function Nav() {
     { name: "About", href: "/about" },
   ];
   const [open, setOpen] = useState(false);
-  const isLogin = true;
 
   const pipes: { name: string; status: "Healthy" | "Down" | "Inactive" }[] = [
     // { name: "Pipe 1", status: "Healthy" },
@@ -32,7 +34,13 @@ export default function Nav() {
   return (
     <nav className="px-4 lg:px-36 lg:py-4 py-2 flex items-center justify-between sticky top-0 bg-white shadow-lg z-50">
       <Link href="/">
-        <Image src="/logo.png" alt="logo" width={208} height={45} className="w-36 lg:w-52" />
+        <Image
+          src="/logo.png"
+          alt="logo"
+          width={208}
+          height={45}
+          className="w-36 lg:w-52"
+        />
       </Link>
       {/* {open ? (
         <svg
@@ -83,7 +91,7 @@ export default function Nav() {
         </svg>
       )} */}
 
-      {isLogin ? (
+      {session ? (
         <div className="font-medium rounded border border-black flex items-center gap-1 relative">
           <div className="border-r border-black flex items-center py-3 px-2 gap-2">
             {pipes.length ? (
@@ -140,6 +148,7 @@ export default function Nav() {
         <button
           type="button"
           className="py-2 px-5 rounded flex items-center gap-2 font-medium border border-black"
+          onClick={() => signIn("google")}
         >
           <svg
             width="28"

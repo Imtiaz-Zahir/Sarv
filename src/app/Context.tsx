@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 type User = {
@@ -37,7 +38,7 @@ export function Context({ children }: { children: React.ReactNode }) {
         logout,
       }}
     >
-      {children}
+      <SessionProvider>{children}</SessionProvider>
     </context.Provider>
   );
 }

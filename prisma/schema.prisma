@@ -12,16 +12,19 @@ model Users {
   name  String
   email String
   image String
-  Links Links[]
+  links Links[]
 }
 
 model Links {
-  id     String @id @unique
-  name   String
-  userId String
-  user   Users  @relation(fields: [userId], references: [id])
+  id          String        @id @unique
+  name        String
+  userId      String
+  user        Users         @relation(fields: [userId], references: [id])
+  connections Connections[]
 }
 
 model Connections {
-  id String @id @unique
+  id     String @id @unique
+  linkId String
+  link   Links  @relation(fields: [linkId], references: [id])
 }
