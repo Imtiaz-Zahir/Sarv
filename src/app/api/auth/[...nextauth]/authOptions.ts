@@ -20,7 +20,7 @@ const authOptions: NextAuthOptions = {
       clientSecret,
     }),
   ],
-  callbacks: {
+  callbacks: { 
     async signIn({ user }) {
       try {
         const doseUserExists = await getUsersByID(user.id);
@@ -39,13 +39,13 @@ const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub as string;
-      }
+    // session({ session, token }) {
+    //   if (session.user) {
+    //     session.user.id = token.sub as string;
+    //   }
 
-      return session;
-    },
+    //   return session;
+    // },
   },
 };
 

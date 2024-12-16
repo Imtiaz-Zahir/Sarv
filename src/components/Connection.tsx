@@ -120,7 +120,7 @@ const ConnectionList: React.FC = () => {
                     required
                   />
                   <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
-                    .example.com
+                    .mkpublic.top
                   </span>
                 </div>
               </div>

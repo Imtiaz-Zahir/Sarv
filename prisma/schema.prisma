@@ -8,23 +8,32 @@ datasource db {
 }
 
 model Users {
-  id    String  @id @unique
-  name  String
-  email String
-  image String
-  links Links[]
+  id        String   @id @unique
+  name      String
+  email     String
+  image     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  links     Links[]
 }
 
 model Links {
   id          String        @id @unique
-  name        String
+  name        String        @unique
+  tunnelId    String
+  tunnelSecret String
   userId      String
   user        Users         @relation(fields: [userId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   connections Connections[]
 }
 
 model Connections {
-  id     String @id @unique
-  linkId String
-  link   Links  @relation(fields: [linkId], references: [id])
+  hostUrl    String   @unique
+  serviceUrl String
+  linkId     String
+  link       Links    @relation(fields: [linkId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

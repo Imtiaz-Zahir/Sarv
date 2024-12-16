@@ -39,6 +39,25 @@ export function createTunnel(name: string) {
   });
 }
 
+export async function getTunnelConfiguration(tunnelId: string) {
+  return client.zeroTrust.tunnels.configurations.get(tunnelId, {
+    account_id: accountId as string,
+  });
+}
+
+export function updateTunnelConfiguration({
+  tunnelId,
+  ingress,
+}: {
+  tunnelId: string;
+  ingress: { hostname: string; service: string }[];
+}) {
+  return client.zeroTrust.tunnels.configurations.update(tunnelId, {
+    account_id: accountId as string,
+    config: { ingress },
+  });
+}
+
 export function createDnsRecord({
   domainName,
   hostname,
@@ -54,24 +73,8 @@ export function createDnsRecord({
   });
 }
 
-export async function getConnections(tunnelId: string) {
-  return client.zeroTrust.tunnels.configurations.get(tunnelId, {
-    account_id: accountId as string,
-  });
-}
-
-export async function deleteConnection({
-  tunnelId,
-  domainName,
-}: {
-  tunnelId: string;
-  domainName: string;
-}) {
-  const connections = await getConnections(tunnelId);
-
-  console.log(connections);
-
-  return client.zeroTrust.tunnels.delete(tunnelId, {
-    account_id: accountId as string,
+export function deleteDnsRecord(recordId: string) {
+  return client.dns.records.delete(recordId, {
+    zone_id: zoneId as string,
   });
 }
