@@ -18,15 +18,15 @@ model Users {
 }
 
 model Links {
-  id          String        @id @unique
-  name        String        @unique
-  tunnelId    String
+  id           String        @id @unique
+  name         String        @unique
+  tunnelId     String
   tunnelSecret String
-  userId      String
-  user        Users         @relation(fields: [userId], references: [id])
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  connections Connections[]
+  userId       String
+  user         Users         @relation(fields: [userId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  connections  Connections[]
 }
 
 model Connections {

@@ -1,9 +1,4 @@
 import Cloudflare from "cloudflare";
-import { randomBytes } from "crypto";
-
-function generateTunnelSecret(length: number = 32): string {
-  return randomBytes(length).toString("hex");
-}
 
 const apiEmail = process.env["CLOUDFLARE_EMAIL"];
 const apiKey = process.env["CLOUDFLARE_API_KEY"];
@@ -31,10 +26,16 @@ const client = new Cloudflare({
   apiKey,
 });
 
-export function createTunnel(name: string) {
+export function createTunnel({
+  name,
+  tunnelSecret,
+}: {
+  name: string;
+  tunnelSecret: string;
+}) {
   return client.zeroTrust.tunnels.create({
     account_id: accountId as string,
-    tunnel_secret: generateTunnelSecret(),
+    tunnel_secret: tunnelSecret,
     name,
   });
 }
