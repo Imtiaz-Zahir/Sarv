@@ -1,29 +1,207 @@
 "use server";
 
-import { getTunnelConfiguration } from "@/services/cloudflare";
-import { createConnection } from "@/services/connection";
+import {
+  createDnsRecord,
+  deleteDnsRecord,
+  getTunnelConfiguration,
+  updateTunnelConfiguration,
+} from "@/services/cloudflare";
+import {
+  createConnection,
+  deleteConnection,
+  getConnectionById,
+  getConnectionByName,
+} from "@/services/connection";
 import { getLinkById } from "@/services/link";
 
 export async function createConnectionAction({
-  hostUrl,
-  serviceUrl,
   linkId,
+  name,
+  serviceIp,
+  servicePort,
+  serviceProtocol,
 }: {
-  hostUrl: string;
-  serviceUrl: string;
   linkId: string;
+  name: string;
+  serviceIp: string;
+  servicePort: number;
+  serviceProtocol:
+    | "HTTP"
+    | "HTTPS"
+    | "UNIX"
+    | "TCP"
+    | "SSH"
+    | "RDP"
+    | "SMB"
+    | "HTTP_STATUS"
+    | "BASTION";
 }) {
+  const userId = "1"; // TODO: Use the actual user ID
+
   const link = await getLinkById(linkId);
 
   if (!link) {
     throw new Error("Link not found");
   }
 
+  if (link.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const existingConnection = await getConnectionByName(name);
+
+  if (existingConnection) {
+    throw new Error("Connection already exists");
+  }
+
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
-  createConnection({
-    hostUrl,
-    linkId,
-    serviceUrl,
+  const domainName = name + "." + link.name + ".mkpulic.top";
+
+  const record = await createDnsRecord({
+    domainName,
+    hostname: configuration.tunnel_id + ".cfargotunnel.com",
   });
+
+  if (!record.id) {
+    throw new Error("Failed to create DNS record");
+  }
+
+  await updateTunnelConfiguration({
+    tunnelId: link.tunnelId,
+    ingress: [
+      ...configuration.config.ingress,
+      {
+        hostname: domainName,
+        service: serviceProtocol + "://" + serviceIp + ":" + servicePort,
+      },
+    ],
+  });
+
+  const connection = await createConnection({
+    linkId,
+    name,
+    serviceIp,
+    servicePort,
+    serviceProtocol,
+    recordId: record.id,
+  });
+
+  return connection;
 }
+
+export async function deleteConnectionAction({ id }: { id: string }) {
+  const userId = "1"; // TODO: Use the actual user ID
+
+  const connection = await getConnectionById(id);
+
+  if (!connection) {
+    throw new Error("Connection not found");
+  }
+
+  const link = await getLinkById(connection.linkId);
+
+  if (!link) {
+    throw new Error("Link not found");
+  }
+
+  if (link.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const configuration = await getTunnelConfiguration(link.tunnelId);
+
+  const updatedIngress = configuration.config.ingress.filter(
+    (ingress) => ingress.hostname.split(".")[0] !== connection.name
+  );
+
+  await updateTunnelConfiguration({
+    tunnelId: link.tunnelId,
+    ingress: updatedIngress,
+  });
+
+  await deleteDnsRecord(connection.recordId);
+
+  await deleteConnection(id);
+}
+
+// export async function updateConnectionAction(id:string, {
+//   name,
+//   serviceIp,
+//   servicePort,
+//   serviceProtocol,
+// }: {
+//   name: string;
+//   serviceIp: string;
+//   servicePort: number;
+//   serviceProtocol:
+//     | "HTTP"
+//     | "HTTPS"
+//     | "UNIX"
+//     | "TCP"
+//     | "SSH"
+//     | "RDP"
+//     | "SMB"
+//     | "HTTP_STATUS"
+//     | "BASTION";
+// }) {
+//   const userId = "1"; // TODO: Use the actual user ID
+
+//   const connection = await getConnectionById(id);
+
+//   if (!connection) {
+//     throw new Error("Connection not found");
+//   }
+
+//   const link = await getLinkById(connection.linkId);
+
+//   if (!link) {
+//     throw new Error("Link not found");
+//   }
+
+//   if (link.userId !== userId) {
+//     throw new Error("Unauthorized");
+//   }
+
+//   const configuration = await getTunnelConfiguration(link.tunnelId);
+
+//   const updatedIngress = configuration.config.ingress.map((ingress) => {
+//     if (ingress.hostname.split(".")[0] === connection.name) {
+//       return {
+//         hostname: name + "." + link.name + ".mkpulic.top",
+//         service: serviceProtocol + "://" + serviceIp + ":" + servicePort,
+//       };
+//     }
+
+//     return ingress;
+//   });
+
+//   await updateTunnelConfiguration({
+//     tunnelId: link.tunnelId,
+//     ingress: updatedIngress,
+//   });
+
+//   await deleteDnsRecord(connection.recordId);
+
+//   const record = await createDnsRecord({
+//     domainName: name + "." + link.name + ".mkpulic.top",
+//     hostname: configuration.tunnel_id + ".cfargotunnel.com",
+//   });
+
+//   if (!record.id) {
+//     throw new Error("Failed to create DNS record");
+//   }
+
+//   await deleteConnection(id);
+
+//   const updatedConnection = await createConnection({
+//     linkId: connection.linkId,
+//     name,
+//     serviceIp,
+//     servicePort,
+//     serviceProtocol,
+//     recordId: record.id,
+//   });
+
+//   return updatedConnection;
+// }

@@ -18,7 +18,7 @@ model Users {
 }
 
 model Links {
-  id           String        @id @unique
+  id           String        @id @default(uuid())
   name         String        @unique
   tunnelId     String
   tunnelSecret String
@@ -29,11 +29,27 @@ model Links {
   connections  Connections[]
 }
 
+enum Protocol {
+  HTTP
+  HTTPS
+  TCP
+  SSH
+  RDP
+  UNIX
+  SMB
+  HTTP_STATUS
+  BASTION
+}
+
 model Connections {
-  hostUrl    String   @unique
-  serviceUrl String
-  linkId     String
-  link       Links    @relation(fields: [linkId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String   @unique
+  serviceIp       String
+  servicePort     Int
+  serviceProtocol Protocol
+  recordId        String
+  linkId          String
+  link            Links    @relation(fields: [linkId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

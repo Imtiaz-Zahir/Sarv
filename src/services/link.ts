@@ -2,13 +2,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function createLink({
-  id,
   name,
   userId,
   tunnelId,
   tunnelSecret,
 }: {
-  id: string;
   name: string;
   userId: string;
   tunnelId: string;
@@ -16,7 +14,6 @@ export async function createLink({
 }) {
   return prisma.links.create({
     data: {
-      id,
       name,
       userId,
       tunnelId,
@@ -29,6 +26,14 @@ export async function getLinks(userId?: string) {
   return prisma.links.findMany({
     where: {
       userId,
+    },
+  });
+}
+
+export async function getLinkByName(name: string) {
+  return prisma.links.findUnique({
+    where: {
+      name,
     },
   });
 }
@@ -48,4 +53,3 @@ export async function deleteLink(id: string) {
     },
   });
 }
-

@@ -2,24 +2,42 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export function createConnection({
-  hostUrl,
-  serviceUrl,
   linkId,
+  name,
+  recordId,
+  serviceIp,
+  servicePort,
+  serviceProtocol,
 }: {
-  hostUrl: string;
-  serviceUrl: string;
   linkId: string;
+  name: string;
+  recordId: string;
+  serviceIp: string;
+  servicePort: number;
+  serviceProtocol:
+    | "HTTP"
+    | "HTTPS"
+    | "UNIX"
+    | "TCP"
+    | "SSH"
+    | "RDP"
+    | "SMB"
+    | "HTTP_STATUS"
+    | "BASTION";
 }) {
   return prisma.connections.create({
     data: {
-      hostUrl,
-      serviceUrl,
       linkId,
+      name,
+      recordId,
+      serviceIp,
+      servicePort,
+      serviceProtocol,
     },
   });
 }
 
-export function getConnections(linkId: string) {
+export function getConnectionsByLinkId(linkId: string) {
   return prisma.connections.findMany({
     where: {
       linkId,
@@ -27,39 +45,65 @@ export function getConnections(linkId: string) {
   });
 }
 
-export function getConnectionByHostUrl(hostUrl: string) {
+export function getConnectionByName(name: string) {
   return prisma.connections.findUnique({
     where: {
-      hostUrl,
+      name,
     },
   });
 }
 
-export function deleteConnection(hostUrl: string) {
+export function getConnectionById(id: string) {
+  return prisma.connections.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
+export function deleteConnection(id: string) {
   return prisma.connections.delete({
     where: {
-      hostUrl,
+      id,
     },
   });
 }
 
 export function updateConnection(
-  hostUrl: string,
+  id: string,
   {
-    newHostUrl,
-    serviceUrl,
+    name,
+    recordId,
+    serviceIp,
+    servicePort,
+    serviceProtocol,
   }: {
-    newHostUrl: string;
-    serviceUrl: string;
+    name: string;
+    recordId: string;
+    serviceIp: string;
+    servicePort: number;
+    serviceProtocol:
+      | "HTTP"
+      | "HTTPS"
+      | "UNIX"
+      | "TCP"
+      | "SSH"
+      | "RDP"
+      | "SMB"
+      | "HTTP_STATUS"
+      | "BASTION";
   }
 ) {
   return prisma.connections.update({
     where: {
-      hostUrl,
+      id,
     },
     data: {
-      hostUrl: newHostUrl,
-      serviceUrl,
+      name,
+      recordId,
+      serviceIp,
+      servicePort,
+      serviceProtocol,
     },
   });
 }

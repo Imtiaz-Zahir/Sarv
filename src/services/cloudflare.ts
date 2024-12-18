@@ -43,7 +43,15 @@ export function createTunnel({
 export async function getTunnelConfiguration(tunnelId: string) {
   return client.zeroTrust.tunnels.configurations.get(tunnelId, {
     account_id: accountId as string,
-  });
+  }) as Promise<{
+    tunnel_id: string;
+    version: number;
+    config: {
+      ingress: { id: string; hostname: string; service: string }[];
+    };
+    source: string;
+    created_at: string;
+  }>;
 }
 
 export function updateTunnelConfiguration({
@@ -56,6 +64,12 @@ export function updateTunnelConfiguration({
   return client.zeroTrust.tunnels.configurations.update(tunnelId, {
     account_id: accountId as string,
     config: { ingress },
+  });
+}
+
+export function deleteTunnel(tunnelId: string) {
+  return client.zeroTrust.tunnels.delete(tunnelId, {
+    account_id: accountId as string,
   });
 }
 

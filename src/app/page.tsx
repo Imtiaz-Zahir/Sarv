@@ -1,6 +1,8 @@
 import React from "react";
 
 export default async function page() {
+
+  // console.log(configuration.config.ingress);
   return (
     <>
       <section className="relative bg-blue-600 text-white py-20">
