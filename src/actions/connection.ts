@@ -12,7 +12,11 @@ import {
   getConnectionById,
   getConnectionByName,
 } from "@/services/connection";
+import { verifyToken } from "@/services/jwt";
 import { getLinkById } from "@/services/link";
+import { getUsersByEmail } from "@/services/user";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function createConnectionAction({
   linkId,
@@ -36,7 +40,21 @@ export async function createConnectionAction({
     | "HTTP_STATUS"
     | "BASTION";
 }) {
-  const userId = "1"; // TODO: Use the actual user ID
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) redirect("/login");
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData)
+    redirect("/login");
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user)
+    redirect("/login");
 
   const link = await getLinkById(linkId);
 
@@ -44,14 +62,19 @@ export async function createConnectionAction({
     throw new Error("Link not found");
   }
 
-  if (link.userId !== userId) {
-    throw new Error("Unauthorized");
-  }
+  if (link.userEmail !== user.email)
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
 
   const existingConnection = await getConnectionByName(name);
 
   if (existingConnection) {
-    throw new Error("Connection already exists");
+    return {
+      success: false,
+      message: "Connection name already exists. Please choose a different name",
+    };
   }
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
@@ -90,24 +113,44 @@ export async function createConnectionAction({
   return connection;
 }
 
-export async function deleteConnectionAction({ id }: { id: string }) {
-  const userId = "1"; // TODO: Use the actual user ID
+export async function deleteConnectionAction(id: string) {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) redirect("/login");
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData)
+    redirect("/login");
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user)
+    redirect("/login");
 
   const connection = await getConnectionById(id);
 
-  if (!connection) {
-    throw new Error("Connection not found");
-  }
+  if (!connection)
+    return {
+      success: false,
+      message: "Connection not found",
+    };
 
   const link = await getLinkById(connection.linkId);
 
-  if (!link) {
-    throw new Error("Link not found");
-  }
+  if (!link)
+    return {
+      success: false,
+      message: "Link not found",
+    };
 
-  if (link.userId !== userId) {
-    throw new Error("Unauthorized");
-  }
+  if (link.userEmail !== user.email)
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
 

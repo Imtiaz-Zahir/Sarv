@@ -4,31 +4,25 @@ const prisma = new PrismaClient();
 export async function createUser({
   name,
   email,
-  image,
-  id,
+  password,
 }: {
-  id: string;
   name: string;
   email: string;
-  image: string;
+  password: string;
 }) {
   return prisma.users.create({
     data: {
       email,
-      id,
-      image,
       name,
+      password
     },
   });
 }
 
-export async function getUsersByID(id: string) {
+export async function getUsersByEmail(email: string) {
   return prisma.users.findUnique({
     where: {
-      id,
-    },
-    include: {
-      links: true,
+      email,
     },
   });
 }

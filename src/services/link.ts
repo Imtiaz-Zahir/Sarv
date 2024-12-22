@@ -3,29 +3,46 @@ const prisma = new PrismaClient();
 
 export async function createLink({
   name,
-  userId,
+  userEmail,
   tunnelId,
   tunnelSecret,
 }: {
   name: string;
-  userId: string;
+  userEmail: string;
   tunnelId: string;
   tunnelSecret: string;
 }) {
   return prisma.links.create({
     data: {
       name,
-      userId,
+      userEmail,
       tunnelId,
       tunnelSecret,
     },
   });
 }
 
-export async function getLinks(userId?: string) {
+export async function getLinks(userEmail?: string) {
   return prisma.links.findMany({
     where: {
-      userId,
+      userEmail,
+    },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      connections: {
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          serviceIp: true,
+          servicePort: true,
+          serviceProtocol: true,
+          linkId: true,
+        },
+      },
     },
   });
 }

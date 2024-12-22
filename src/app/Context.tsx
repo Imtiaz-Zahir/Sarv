@@ -1,13 +1,11 @@
 "use client";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 type User = {
   name: string;
   email: string;
-  image: string;
 };
 
 type ContextProps = {
@@ -19,16 +17,19 @@ type ContextProps = {
 export const context = createContext<ContextProps | null>(null);
 
 export function Context({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<null | User>({
-    name: "Linda",
-    email: "adsf@gmail.com",
-    image: "/beautician.jpg",
-  });
+  const [user, setUser] = useState<null | User>(null);
 
   function logout() {
     setUser(null);
     redirect("/");
   }
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setUser(JSON.parse(user) || null);
+    }
+  }, []);
 
   return (
     <context.Provider
@@ -38,7 +39,7 @@ export function Context({ children }: { children: React.ReactNode }) {
         logout,
       }}
     >
-      <SessionProvider>{children}</SessionProvider>
+      {children}
     </context.Provider>
   );
 }

@@ -6,51 +6,90 @@ import {
   getTunnelConfiguration,
 } from "@/services/cloudflare";
 import { getConnectionByName } from "@/services/connection";
+import { verifyToken } from "@/services/jwt";
 import {
   createLink,
   deleteLink,
   getLinkById,
   getLinkByName,
+  getLinks,
 } from "@/services/link";
+import { getUsersByEmail } from "@/services/user";
 import { randomBytes } from "crypto";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export async function createLinkAction({
-  name,
-}: {
-  name: string;
-  token: string;
-}) {
+export async function createLinkAction( name: string ) {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) redirect("/login");
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData)
+   redirect("/login");
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user)
+    redirect("/login");
+
   const existingLink = await getLinkByName(name);
 
-  if (existingLink) throw new Error("Link already exists");
+  if (existingLink)
+    return {
+      success: false,
+      message: "Link name already exists. Please choose a different name",
+    };
 
   const tunnelSecret = randomBytes(32).toString("hex");
   const tunnel = await createTunnel({ name, tunnelSecret });
 
-  const userId = "1"; // TODO: Use the actual user ID
-
   const link = await createLink({
     name,
-    userId,
     tunnelSecret,
     tunnelId: tunnel.id,
+    userEmail: user.email,
   });
 
   return {
-    id: link.id,
-    name: link.name,
-    createdAt: link.createdAt,
+    success: true,
+    link,
   };
 }
 
-export async function deleteLinkAction({ id }: { id: string }) {
-  const userId = "1"; // TODO: Use the actual user ID
+export async function deleteLinkAction(id: string) {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) redirect("/login");
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData)
+    redirect("/login");
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user)
+    redirect("/login");
 
   const link = await getLinkById(id);
 
-  if (!link) throw new Error("Link not found");
+  if (!link)
+    return {
+      success: false,
+      message: "Link not found",
+    };
 
-  if (link.userId !== userId) throw new Error("Unauthorized");
+  if (link.userEmail !== user.email)
+    return {
+      success: false,
+      message: "You do not have permission to delete this link",
+    };
 
   const tunnel = await getTunnelConfiguration(link.tunnelId);
 
@@ -65,4 +104,29 @@ export async function deleteLinkAction({ id }: { id: string }) {
   await deleteTunnel(link.tunnelId);
 
   await deleteLink(id);
+}
+
+export async function getLinksAction() {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) redirect("/login");
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData)
+    redirect("/login");
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user)
+    redirect("/login");
+
+  const links = await getLinks(user.email);
+
+  return {
+    success: true,
+    links,
+  };
 }

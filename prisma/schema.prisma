@@ -8,10 +8,9 @@ datasource db {
 }
 
 model Users {
-  id        String   @id @unique
+  email     String   @id @unique
   name      String
-  email     String
-  image     String
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   links     Links[]
@@ -22,8 +21,8 @@ model Links {
   name         String        @unique
   tunnelId     String
   tunnelSecret String
-  userId       String
-  user         Users         @relation(fields: [userId], references: [id])
+  userEmail       String
+  user         Users         @relation(fields: [userEmail], references: [email])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   connections  Connections[]

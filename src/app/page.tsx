@@ -23,14 +23,14 @@ export default async function page() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-white">
+      <section className="px-4 lg:px-28 py-16 bg-white">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-8">Features</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
             <div className="p-8 bg-gray-100 rounded-lg shadow-lg">
               <h3 className="text-xl font-semibold mb-4">Unlimited Domains</h3>
               <p className="text-gray-700">
-                Host as many domains as you need without limitations. The sky's
+                Host as many domains as you need without limitations. The sky&apos;s
                 the limit for your online presence.
               </p>
             </div>
@@ -53,7 +53,7 @@ export default async function page() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 bg-blue-100">
+      <section className="px-4 lg:px-28 py-16 bg-blue-100">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-8">How It Works</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

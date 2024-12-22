@@ -1,46 +1,32 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// import { signIn, signOut, useSession } from "next-auth/react";
-// import Button from "./Button";
 import Auth from "./Auth";
+import { context } from "@/app/Context";
 
 export default function Nav() {
-  // const { data: session } = useSession();
+  const appContext = useContext(context);
 
-  const links = [
-    { name: "Home", href: "/" },
-    { name: "Subscription", href: "/subscription" },
-    { name: "Matches", href: "/matches" },
-    { name: "Message", href: "/message" },
-    { name: "About", href: "/about" },
-  ];
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const pipes: { name: string; status: "Healthy" | "Down" | "Inactive" }[] = [
-    // { name: "Pipe 1", status: "Healthy" },
-    // { name: "Pipe 2", status: "Down" },
-    // { name: "Pipe 3", status: "Inactive" },
-  ];
 
   useEffect(() => {
     if (window.scrollY > 0) setScrolled(true);
     window.addEventListener("scroll", () => setScrolled(window.scrollY > 0));
   }, []);
 
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [open]);
+  // useEffect(() => {
+  //   if (open) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "auto";
+  //   }
+  // }, [open]);
 
   return (
     <nav
-      className={`px-4 lg:px-36 lg:py-4 py-2 flex items-center justify-between sticky top-0 bg-white z-50 ${
+      className={`px-4 lg:px-28 lg:py-4 py-2 flex items-center justify-between sticky top-0 bg-white z-50 border-b ${
         scrolled && "shadow-lg"
       }`}
     >
@@ -102,7 +88,16 @@ export default function Nav() {
         </svg>
       )} */}
 
-      <Auth />
+      <div className="flex items-center gap-5 text-lg font-medium">
+        {appContext?.user && (
+          <ul>
+            <Link href="/dashboard"> 
+              <li>Dashboard</li>
+            </Link>
+          </ul>
+        )}
+        <Auth />
+      </div>
     </nav>
   );
 }
