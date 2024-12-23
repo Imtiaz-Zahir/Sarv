@@ -1,5 +1,10 @@
 "use client";
-import { createLinkAction, getLinksAction } from "@/actions/link";
+import { createConnectionAction } from "@/actions/connection";
+import {
+  createLinkAction,
+  getCommandAction,
+  getLinksAction,
+} from "@/actions/link";
 import React, { useEffect, useState } from "react";
 
 type Links = {
@@ -52,6 +57,8 @@ export default function Page() {
   const [currentConnection, setCurrentConnection] = useState<Connection | null>(
     null
   );
+  const [command, setCommand] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
 
   const handleAddConnection = () => {
     setIsModalVisible(true);
@@ -69,19 +76,46 @@ export default function Page() {
     setIsModalVisible(false);
   };
 
-  const handleSaveConnection = () => {
-    // if (currentConnection) {
-    //   // Edit existing connection
-    //   setConnections(
-    //     connections.map((conn) =>
-    //       conn.address === currentConnection.address ? newConnection : conn
-    //     )
-    //   );
-    // } else {
-    //   // Add new connection
-    //   setConnections([...connections, newConnection]);
-    // }
-    setIsModalVisible(false);
+  const handleSaveConnection = async () => {
+    try {
+      if (
+        !newConnection.address ||
+        !newConnection.ip ||
+        !newConnection.port ||
+        !newConnection.protocol
+      ) {
+        alert("Please fill all the fields");
+        return;
+      }
+
+      const newConnectionData = await createConnectionAction({
+        linkId: links[0].id,
+        name: newConnection.address,
+        serviceIp: newConnection.ip,
+        servicePort: parseInt(newConnection.port),
+        serviceProtocol: newConnection.protocol.toUpperCase() as
+          | "HTTP"
+          | "HTTPS",
+      });
+
+      if (newConnectionData.id) {
+        setLinks(
+          links.map((link) => {
+            if (link.id === links[0].id) {
+              return {
+                ...link,
+                connections: [...link.connections, newConnectionData],
+              };
+            }
+            return link;
+          })
+        );
+      }
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again later.");
+    }
   };
 
   const handleChange = (
@@ -101,6 +135,16 @@ export default function Page() {
         alert("Something went wrong. Please try again later.");
       });
   }, []);
+
+  useEffect(() => {
+    if (links.length > 0) {
+      getCommandAction(links[0].id)
+        .then((response) => {
+          setCommand(response.command || "");
+        })
+        .catch(console.error);
+    }
+  }, [links]);
 
   async function handelAddLink(e: React.FormEvent) {
     try {
@@ -274,7 +318,7 @@ export default function Page() {
                 {links[0].connections.map((connection, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="py-2 px-4 border-b">
-                      {connection.name + "." + links[0].name + "." + rootDomain}
+                      {connection.name + "-" + links[0].name + "." + rootDomain}
                     </td>
                     <td className="py-2 px-4 border-b">
                       {connection.serviceProtocol}
@@ -298,29 +342,66 @@ export default function Page() {
               </tbody>
             </table>
           </div>
-          {/* </div> */}
           <div>
-            <div className="max-w-sm w-full border border-black rounded-lg p-4">
-              {/* Info Section */}
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold mb-2">
-                  Download Our Software
-                </h2>
-                <p className="text-sm text-gray-700">
-                  Get the latest version of our software. Simply click the
-                  button below to start the download. Installation is quick and
-                  easy. For any issues, visit our{" "}
-                  <a href="/support" className="text-blue-500 underline">
-                    support page
-                  </a>
-                  .
-                </p>
+            <div className="max-w-sm w-full border border-gray-300 shadow-lg rounded-lg p-6 bg-white">
+              {/* Instruction Steps */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Setup Instructions
+                </h3>
+                <ol className="list-decimal list-inside text-sm text-gray-700 space-y-2 pl-4">
+                  <li>
+                    Open <strong>PowerShell</strong> in administrator mode. You
+                    can do this by searching &quot;PowerShell&quot; in the Start
+                    Menu, right-clicking it, and selecting{" "}
+                    <strong>Run as Administrator</strong>.
+                  </li>
+                  <li>
+                    Copy the command below by clicking the{" "}
+                    <strong>Copy Command</strong> button.
+                  </li>
+                  <li>
+                    Paste the command into PowerShell and press{" "}
+                    <strong>Enter</strong>.
+                  </li>
+                </ol>
               </div>
 
-              {/* Download Button */}
-              <button className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">
-                Download
-              </button>
+              {/* Command Section */}
+              <div className="mb-6">
+                <label className="text-sm font-medium text-gray-700">
+                  Command:
+                </label>
+                <div className="relative mt-2 bg-gray-100 border border-gray-300 rounded-lg px-4 py-3">
+                  <input
+                    type="text"
+                    readOnly
+                    value={command}
+                    className="w-full bg-transparent text-sm text-gray-800 focus:outline-none"
+                  />
+                  {command && (
+                    <button
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-md hover:bg-blue-600 transition duration-200"
+                      onClick={() => {
+                        navigator.clipboard.writeText(command);
+                        setCopied(true);
+                        setTimeout(() => {
+                          setCopied(false);
+                        }, 2000);
+                      }}
+                    >
+                      {copied ? "Copied" : "Copy"}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Final Note */}
+              <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm rounded-lg px-4 py-3">
+                <strong>Important:</strong> Ensure that PowerShell is run as an
+                administrator to avoid any permission-related issues during the
+                setup.
+              </div>
             </div>
           </div>
         </div>
@@ -375,14 +456,14 @@ export default function Page() {
                 <div className="flex items-center">
                   <input
                     type="text"
-                    name="subdomain"
+                    name="address"
                     value={newConnection.address}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500">
-                    {links[0].name + "."}
+                    {"-" + links[0].name + "."}
                   </span>
                   <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
                     {rootDomain}
@@ -405,9 +486,8 @@ export default function Page() {
                     <option value="" hidden>
                       Protocol
                     </option>
-                    <option value="http">HTTP</option>
-                    <option value="https">HTTPS</option>
-                    <option value="ftp">FTP</option>
+                    <option value="HTTP">HTTP</option>
+                    <option value="HTTPS">HTTPS</option>
                   </select>
                   <input
                     type="text"

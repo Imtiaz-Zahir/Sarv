@@ -4,6 +4,7 @@ import {
   deleteDnsRecord,
   deleteTunnel,
   getTunnelConfiguration,
+  updateTunnelConfiguration,
 } from "@/services/cloudflare";
 import { getConnectionByName } from "@/services/connection";
 import { verifyToken } from "@/services/jwt";
@@ -50,6 +51,16 @@ export async function createLinkAction(name: string) {
 
   const tunnelSecret = randomBytes(32).toString("hex");
   const tunnel = await createTunnel({ name, tunnelSecret });
+
+  await updateTunnelConfiguration({
+    tunnelId: tunnel.id,
+    ingress: [
+      {
+        hostname: "",
+        service: "http_status:404",
+      },
+    ],
+  });
 
   const link = await createLink({
     name,
@@ -146,5 +157,49 @@ export async function getLinksAction() {
   return {
     success: true,
     links,
+  };
+}
+
+export async function getCommandAction(linkId: string) {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("token");
+
+  if (!token) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
+
+  const tokenData = verifyToken(token.value);
+
+  if (!tokenData) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
+
+  const user = await getUsersByEmail(tokenData.email);
+
+  if (!user) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
+
+  const link = await getLinkById(linkId);
+
+  if (!link)
+    return {
+      success: false,
+      message: "Link not found",
+    };
+
+  if (link.userEmail !== user.email)
+    return {
+      success: false,
+      message: "You do not have permission to get the command",
+    };
+
+  return {
+    success: true,
+    command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelSecret}; Write-Host "setup completed"`,
   };
 }

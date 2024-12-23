@@ -18,6 +18,11 @@ import { getUsersByEmail } from "@/services/user";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+if (!rootDomain) {
+  throw new Error("Root domain is not defined");
+}
+
 export async function createConnectionAction({
   linkId,
   name,
@@ -86,27 +91,27 @@ export async function createConnectionAction({
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
-  const domainName = name + "." + link.name + ".mkpulic.top";
+  const domainName = name + "-" + link.name + "." + rootDomain;
 
+  await updateTunnelConfiguration({
+    tunnelId: link.tunnelId,
+    ingress: [
+      {
+        hostname: domainName,
+        service: serviceProtocol + "://" + serviceIp + ":" + servicePort,
+      },
+      ...configuration.config.ingress,
+    ],
+  });
+  
   const record = await createDnsRecord({
     domainName,
-    hostname: configuration.tunnel_id + ".cfargotunnel.com",
+    hostname: link.tunnelId + ".cfargotunnel.com",
   });
 
   if (!record.id) {
     throw new Error("Failed to create DNS record");
   }
-
-  await updateTunnelConfiguration({
-    tunnelId: link.tunnelId,
-    ingress: [
-      ...configuration.config.ingress,
-      {
-        hostname: domainName,
-        service: serviceProtocol + "://" + serviceIp + ":" + servicePort,
-      },
-    ],
-  });
 
   const connection = await createConnection({
     linkId,
@@ -117,7 +122,16 @@ export async function createConnectionAction({
     recordId: record.id,
   });
 
-  return connection;
+  return {
+    id: connection.id,
+    linkId: connection.linkId,
+    name: connection.name,
+    serviceIp: connection.serviceIp,
+    servicePort: connection.servicePort,
+    serviceProtocol: connection.serviceProtocol,
+    createdAt: connection.createdAt,
+    updatedAt: connection.updatedAt,
+  };
 }
 
 export async function deleteConnectionAction(id: string) {
