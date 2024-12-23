@@ -44,17 +44,24 @@ export async function createConnectionAction({
 
   const token = cookieStore.get("token");
 
-  if (!token) redirect("/login");
+  if (!token) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
 
   const tokenData = verifyToken(token.value);
 
-  if (!tokenData)
+  if (!tokenData) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const user = await getUsersByEmail(tokenData.email);
 
-  if (!user)
+  if (!user) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const link = await getLinkById(linkId);
 
@@ -118,17 +125,24 @@ export async function deleteConnectionAction(id: string) {
 
   const token = cookieStore.get("token");
 
-  if (!token) redirect("/login");
+  if (!token) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
 
   const tokenData = verifyToken(token.value);
 
-  if (!tokenData)
+  if (!tokenData) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const user = await getUsersByEmail(tokenData.email);
 
-  if (!user)
+  if (!user) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const connection = await getConnectionById(id);
 

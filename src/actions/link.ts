@@ -19,7 +19,7 @@ import { randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function createLinkAction( name: string ) {
+export async function createLinkAction(name: string) {
   const cookieStore = await cookies();
 
   const token = cookieStore.get("token");
@@ -28,13 +28,17 @@ export async function createLinkAction( name: string ) {
 
   const tokenData = verifyToken(token.value);
 
-  if (!tokenData)
-   redirect("/login");
+  if (!tokenData) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
 
   const user = await getUsersByEmail(tokenData.email);
 
-  if (!user)
+  if (!user) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const existingLink = await getLinkByName(name);
 
@@ -65,17 +69,24 @@ export async function deleteLinkAction(id: string) {
 
   const token = cookieStore.get("token");
 
-  if (!token) redirect("/login");
+  if (!token) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
 
   const tokenData = verifyToken(token.value);
 
-  if (!tokenData)
+  if (!tokenData) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const user = await getUsersByEmail(tokenData.email);
 
-  if (!user)
+  if (!user) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const link = await getLinkById(id);
 
@@ -111,17 +122,24 @@ export async function getLinksAction() {
 
   const token = cookieStore.get("token");
 
-  if (!token) redirect("/login");
+  if (!token) {
+    cookieStore.delete("token");
+    redirect("/login");
+  }
 
   const tokenData = verifyToken(token.value);
 
-  if (!tokenData)
+  if (!tokenData) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const user = await getUsersByEmail(tokenData.email);
 
-  if (!user)
+  if (!user) {
+    cookieStore.delete("token");
     redirect("/login");
+  }
 
   const links = await getLinks(user.email);
 

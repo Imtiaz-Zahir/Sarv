@@ -1,5 +1,5 @@
 "use server";
-import { cookies } from 'next/headers'
+import { cookies } from "next/headers";
 
 import { comparePassword, hashPassword } from "@/services/hash";
 import { generateToken } from "@/services/jwt";
