@@ -7,6 +7,11 @@ interface Connection {
   port: string;
 }
 
+const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+if (!rootDomain) {
+  throw new Error("Root domain is not defined");
+}
+
 const ConnectionList: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([
     { address: "192.175.152.172", ip: "localhost", port: "8080" },
@@ -101,85 +106,96 @@ const ConnectionList: React.FC = () => {
       {/* Modal for adding/editing connections */}
       {isModalVisible && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
-            <h2 className="text-xl font-semibold mb-4">
-              {currentConnection ? "Edit Connection" : "Add New Connection"}
-            </h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  URL
-                </label>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    name="subdomain"
-                    value={newConnection.address}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
-                    .mkpublic.top
-                  </span>
-                </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
+          <h2 className="text-xl font-semibold mb-4">
+            {currentConnection ? "Edit Connection" : "Add New Connection"}
+          </h2>
+          <form>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                URL
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  name="subdomain"
+                  value={newConnection.address}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
+                  {rootDomain}
+                </span>
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  IP
-                </label>
+            </div>
+      
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Connection Details
+              </label>
+              <div className="flex items-center space-x-2">
+                <select
+                  name="protocol"
+                  // value={newConnection.protocol}
+                  // onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="http">HTTP</option>
+                  <option value="https">HTTPS</option>
+                  <option value="ftp">FTP</option>
+                </select>
                 <input
                   type="text"
                   name="ip"
                   value={newConnection.ip}
                   onChange={handleChange}
                   placeholder="localhost"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Port
-                </label>
                 <input
                   type="text"
                   name="port"
                   value={newConnection.port}
                   onChange={handleChange}
                   placeholder="8080"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
-              <div className="flex justify-end space-x-4">
+            </div>
+      
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                onClick={handleSaveConnection}
+              >
+                {currentConnection ? "Save Changes" : "Add Connection"}
+              </button>
+              {currentConnection && (
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                  onClick={handleCancel}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                  // onClick={handleDeleteConnection}
                 >
-                  Cancel
+                  Delete Connection
                 </button>
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                  onClick={handleSaveConnection}
-                >
-                  {currentConnection ? "Save Changes" : "Add Connection"}
-                </button>
-                {currentConnection && (
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                    // onClick={handleDeleteConnection}
-                  >
-                    Delete Connection
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
+              )}
+            </div>
+          </form>
         </div>
+      </div>
+      
       )}
     </div>
   );

@@ -31,6 +31,12 @@ interface Connection {
   address: string;
   ip: string;
   port: string;
+  protocol: string;
+}
+
+const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+if (!rootDomain) {
+  throw new Error("Root domain is not defined");
 }
 
 export default function Page() {
@@ -41,6 +47,7 @@ export default function Page() {
     address: "",
     ip: "",
     port: "",
+    protocol: "",
   });
   const [currentConnection, setCurrentConnection] = useState<Connection | null>(
     null
@@ -49,7 +56,7 @@ export default function Page() {
   const handleAddConnection = () => {
     setIsModalVisible(true);
     setCurrentConnection(null);
-    setNewConnection({ address: "", ip: "", port: "" });
+    setNewConnection({ address: "", ip: "", port: "", protocol: "" });
   };
 
   // const handleEditConnection = (connection: Connection) => {
@@ -77,7 +84,9 @@ export default function Page() {
     setIsModalVisible(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setNewConnection({ ...newConnection, [name]: value });
   };
@@ -258,18 +267,14 @@ export default function Page() {
                   <th className="py-2 px-4 border-b text-left">Protocol</th>
                   <th className="py-2 px-4 border-b text-left">IP</th>
                   <th className="py-2 px-4 border-b text-left">Port</th>
-                  <th className="py-2 px-4 border-b text-left">Action</th>
+                  {/* <th className="py-2 px-4 border-b text-left">Action</th> */}
                 </tr>
               </thead>
               <tbody>
                 {links[0].connections.map((connection, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="py-2 px-4 border-b">
-                      {connection.name +
-                        "." +
-                        links[0].name +
-                        "." +
-                        "mkpublic.com"}
+                      {connection.name + "." + links[0].name + "." + rootDomain}
                     </td>
                     <td className="py-2 px-4 border-b">
                       {connection.serviceProtocol}
@@ -280,15 +285,14 @@ export default function Page() {
                     <td className="py-2 px-4 border-b">
                       {connection.servicePort}
                     </td>
-                    <td className="py-2 px-4 border-b">
-                      Edit
-                      {/* <button
+                    {/* <td className="py-2 px-4 border-b">
+                      <button
                       className="text-blue-500 hover:text-blue-700"
                       onClick={() => handleEditConnection(connection)}
                     >
                       Edit
-                    </button> */}
-                    </td>
+                    </button>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -377,39 +381,55 @@ export default function Page() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
+                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500">
+                    {links[0].name + "."}
+                  </span>
                   <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
-                    .example.com
+                    {rootDomain}
                   </span>
                 </div>
               </div>
+
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  IP
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Connection Details
                 </label>
-                <input
-                  type="text"
-                  name="ip"
-                  value={newConnection.ip}
-                  onChange={handleChange}
-                  placeholder="localhost"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
+                <div className="flex items-center space-x-2">
+                  <select
+                    name="protocol"
+                    value={newConnection.protocol}
+                    onChange={handleChange}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="" hidden>
+                      Protocol
+                    </option>
+                    <option value="http">HTTP</option>
+                    <option value="https">HTTPS</option>
+                    <option value="ftp">FTP</option>
+                  </select>
+                  <input
+                    type="text"
+                    name="ip"
+                    value={newConnection.ip}
+                    onChange={handleChange}
+                    placeholder="localhost"
+                    className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="port"
+                    value={newConnection.port}
+                    onChange={handleChange}
+                    placeholder="8080"
+                    className="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Port
-                </label>
-                <input
-                  type="text"
-                  name="port"
-                  value={newConnection.port}
-                  onChange={handleChange}
-                  placeholder="8080"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"

@@ -92,3 +92,16 @@ export async function loginUserAction({
     };
   }
 }
+
+export async function logoutUserAction() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("token");
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+}

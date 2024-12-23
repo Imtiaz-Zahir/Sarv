@@ -3,9 +3,12 @@ import React, { useContext } from "react";
 // import Image from "next/image";
 import { context } from "@/app/Context";
 import Link from "next/link";
-
+import { logoutUserAction } from "@/actions/user";
+import { useRouter } from "next/navigation"; 
 export default function Auth() {
   const appContext = useContext(context);
+  const router = useRouter();
+
   return (
     <div>
       {appContext?.user ? (
@@ -13,6 +16,17 @@ export default function Auth() {
           <button
             type="button"
             className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
+            onClick={async () => {
+              logoutUserAction().then((response) => {
+                if (response?.message) {
+                  alert(response.message);
+                } else {
+                  appContext.setUser(null);
+                  localStorage.removeItem("user");
+                  router.push("/");
+                }
+              });
+            }}
           >
             {/* <Image
               src={"/user.png"}
