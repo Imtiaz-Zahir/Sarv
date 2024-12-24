@@ -7,7 +7,10 @@ export async function middleware(request: NextRequest) {
 
   const token = cookieStore.get("token");
 
-  if (token && (request.url === "/login" || request.url.includes("/register"))) {
+  if (
+    token &&
+    (request.url.includes("/login") || request.url.includes("/register"))
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
