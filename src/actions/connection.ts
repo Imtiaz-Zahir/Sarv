@@ -98,12 +98,17 @@ export async function createConnectionAction({
     ingress: [
       {
         hostname: domainName,
-        service: serviceProtocol + "://" + serviceIp + ":" + servicePort,
+        service:
+          serviceProtocol.toLocaleLowerCase() +
+          "://" +
+          serviceIp +
+          ":" +
+          servicePort,
       },
       ...configuration.config.ingress,
     ],
   });
-  
+
   const record = await createDnsRecord({
     domainName,
     hostname: link.tunnelId + ".cfargotunnel.com",

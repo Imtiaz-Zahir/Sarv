@@ -50,7 +50,27 @@ export async function createLinkAction(name: string) {
     };
 
   const tunnelSecret = randomBytes(32).toString("hex");
-  const tunnel = await createTunnel({ name, tunnelSecret });
+  const tunnel = (await createTunnel({ name, tunnelSecret })) as {
+    id: string;
+    account_tag: string;
+    created_at: string;
+    deleted_at: string;
+    name: string;
+    connections: string[];
+    conns_active_at: string;
+    conns_inactive_at: string;
+    tun_type: string;
+    metadata: Record<string, unknown>;
+    status: string;
+    remote_config: boolean;
+    credentials_file: {
+      AccountTag: string;
+      TunnelID: string;
+      TunnelName: string;
+      TunnelSecret: string;
+    };
+    token: string;
+  };
 
   await updateTunnelConfiguration({
     tunnelId: tunnel.id,
@@ -64,7 +84,7 @@ export async function createLinkAction(name: string) {
 
   const link = await createLink({
     name,
-    tunnelSecret,
+    tunnelSecret: tunnel.token,
     tunnelId: tunnel.id,
     userEmail: user.email,
   });
