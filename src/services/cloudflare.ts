@@ -85,6 +85,7 @@ export function createDnsRecord({
     content: hostname,
     name: domainName,
     zone_id: zoneId as string,
+    proxied: true,
   });
 }
 
