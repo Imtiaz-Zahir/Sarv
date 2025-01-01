@@ -5,6 +5,7 @@ import {
   getCommandAction,
   getLinksAction,
 } from "@/actions/link";
+import Button from "@/components/Button";
 import React, { useEffect, useState } from "react";
 
 type Links = {
@@ -59,6 +60,7 @@ export default function Page() {
   );
   const [command, setCommand] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleAddConnection = () => {
     setIsModalVisible(true);
@@ -78,6 +80,9 @@ export default function Page() {
 
   const handleSaveConnection = async () => {
     try {
+      if (loading) return;
+      setLoading(true);
+
       if (
         !newConnection.address ||
         !newConnection.ip ||
@@ -85,6 +90,7 @@ export default function Page() {
         !newConnection.protocol
       ) {
         alert("Please fill all the fields");
+        setLoading(false);
         return;
       }
 
@@ -111,9 +117,12 @@ export default function Page() {
           })
         );
       }
+
+      setLoading(false);
       setIsModalVisible(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
       alert("Something went wrong. Please try again later.");
     }
   };
@@ -149,6 +158,9 @@ export default function Page() {
   async function handelAddLink(e: React.FormEvent) {
     try {
       e.preventDefault();
+      if (loading) return;
+
+      setLoading(true);
 
       if (!name) alert("Please enter a name for the link");
 
@@ -156,6 +168,7 @@ export default function Page() {
 
       if (!response.success) {
         alert(response.message);
+        setLoading(false);
         return;
       }
 
@@ -171,9 +184,11 @@ export default function Page() {
         ]);
       }
 
+      setLoading(false);
       setName("");
     } catch (error) {
       console.error(error);
+      setLoading(false);
       alert("Something went wrong. Please try again later.");
     }
   }
@@ -414,7 +429,7 @@ export default function Page() {
             Create a New Link
           </h2>
 
-          <div className="mb-4">
+          <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 mb-1"
@@ -432,13 +447,23 @@ export default function Page() {
               placeholder="Enter link name"
             />
           </div>
+          {name && (
+            <p className="text-xs text-gray-500 flex gap-2 items-center mt-2">
+              Your URL will End with
+              <strong>{"...-" + name + "." + rootDomain}</strong>
+            </p>
+          )}
 
-          <button
+          <Button type="submit" loading={loading} className="w-full mt-4">
+            Create Link
+          </Button>
+
+          {/* <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Create Link
-          </button>
+          </button> */}
         </form>
       )}
 
@@ -462,25 +487,37 @@ export default function Page() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
-                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500">
+                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 whitespace-nowrap">
                     {"-" + links[0].name + "."}
                   </span>
-                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg">
+                  <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 rounded-r-lg whitespace-nowrap">
                     {rootDomain}
                   </span>
                 </div>
+                {newConnection.address && (
+                  <p className="text-xs text-gray-500 flex gap-2 items-center mt-2">
+                    Your URL will be
+                    <strong>
+                      {newConnection.address +
+                        "-" +
+                        links[0].name +
+                        "." +
+                        rootDomain}
+                    </strong>
+                  </p>
+                )}
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Connection Details
+                  Service Details
                 </label>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-0">
                   <select
                     name="protocol"
                     value={newConnection.protocol}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   >
                     <option value="" hidden>
@@ -489,22 +526,32 @@ export default function Page() {
                     <option value="HTTP">HTTP</option>
                     <option value="HTTPS">HTTPS</option>
                   </select>
+
+                  <span className="px-1 py-2 bg-gray-100 border-y border-gray-300">
+                    ://
+                  </span>
+
                   <input
                     type="text"
                     name="ip"
                     value={newConnection.ip}
                     onChange={handleChange}
                     placeholder="localhost"
-                    className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-grow px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
+
+                  <span className="px-1 py-2 bg-gray-100 border-y border-gray-300">
+                    :
+                  </span>
+
                   <input
                     type="text"
                     name="port"
                     value={newConnection.port}
                     onChange={handleChange}
                     placeholder="8080"
-                    className="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-24 px-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
@@ -518,13 +565,14 @@ export default function Page() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                <Button
+                  type="submit"
+                  loading={loading}
                   onClick={handleSaveConnection}
                 >
                   {currentConnection ? "Save Changes" : "Add Connection"}
-                </button>
+                </Button>
+
                 {currentConnection && (
                   <button
                     type="button"

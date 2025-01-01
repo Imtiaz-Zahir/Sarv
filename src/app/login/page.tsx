@@ -4,15 +4,20 @@ import React, { useContext } from "react";
 import { context } from "../Context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Button from "@/components/Button";
 
 export default function Page() {
   const appContext = useContext(context);
   const router = useRouter();
   const [data, setData] = React.useState({ email: "", password: "" });
+  const [loading, setLoading] = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     try {
       e.preventDefault();
+      if (loading) return;
+
+      setLoading(true);
 
       const response = await loginUserAction(data);
       if (!response.success) {
@@ -24,9 +29,13 @@ export default function Page() {
       if (response.user) {
         appContext?.setUser(response.user);
       }
+
+      setLoading(false);
+
       router.push("/dashboard");
     } catch (error) {
       console.error(error);
+      setLoading(false);
       alert("Something went wrong. Please try again later.");
     }
   }
@@ -73,12 +82,17 @@ export default function Page() {
         />
       </div>
 
-      <button
+      {/* <button
         type="submit"
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         Login
-      </button>
+      </button> */}
+
+      <Button type="submit" loading={loading} className="w-full">
+        Login
+      </Button>
+
       <p className="text-end mt-2">
         Don&apos;t have an account{" "}
         <Link href="/register" className="text-blue-600">
