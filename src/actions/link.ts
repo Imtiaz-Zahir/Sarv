@@ -7,7 +7,6 @@ import {
   updateTunnelConfiguration,
 } from "@/services/cloudflare";
 import { getConnectionByName } from "@/services/connection";
-import { verifyToken } from "@/services/jwt";
 import {
   createLink,
   deleteLink,
@@ -17,27 +16,21 @@ import {
 } from "@/services/link";
 import { getUsersByEmail } from "@/services/user";
 import { randomBytes } from "crypto";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import {auth,signOut} from "@/auth"
 
 export async function createLinkAction(name: string) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) redirect("/login");
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 
@@ -96,26 +89,17 @@ export async function createLinkAction(name: string) {
 }
 
 export async function deleteLinkAction(id: string) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
-    redirect("/login");
-  }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 
@@ -149,26 +133,17 @@ export async function deleteLinkAction(id: string) {
 }
 
 export async function getLinksAction() {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
-    redirect("/login");
-  }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 
@@ -181,26 +156,17 @@ export async function getLinksAction() {
 }
 
 export async function getCommandAction(linkId: string) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
-    redirect("/login");
-  }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 

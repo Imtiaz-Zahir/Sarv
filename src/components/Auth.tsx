@@ -4,18 +4,8 @@ import Image from "next/image";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
-const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const redirectUri = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI;
-
-if(!clientId) {
-  throw new Error("google client id not found");
-}
-
 export default function Auth() {
   const { data: session } = useSession();
-  const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-    redirectUri
-  )}&response_type=token&scope=openid%20email%20profile`;
   return (
     <div>
       {session ? (
@@ -46,7 +36,7 @@ export default function Auth() {
       ) : (
         <button
           type="button"
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { redirectTo: "/dashboard" })}
           className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
         >
           <svg

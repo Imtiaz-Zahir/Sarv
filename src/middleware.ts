@@ -1,29 +1,27 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
+// import { NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
+// import { auth } from "./auth";
 
-export async function middleware(request: NextRequest) {
-  const cookieStore = await cookies();
+// export async function middleware(request: NextRequest) {
+//   const session = await auth();
 
-  const token = cookieStore.get("token");
+  // if (
+  //   session &&
+  //   (request.url.includes("/") || request.url.includes("/register"))
+  // ) {
+  //   return NextResponse.redirect(new URL("/dashboard", request.url));
+  // }
 
-  if (
-    token &&
-    (request.url.includes("/login") || request.url.includes("/register"))
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+  // if (!session && request.url.includes("/dashboard")) {
+  //   return NextResponse.redirect(new URL("/", request.url));
+  // }
 
-  if (!token && request.url.includes("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+//   return NextResponse.next();
+// }
 
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ["/dashboard", "/login", "/register"],
-};
+// export const config = {
+//   matcher: ["/dashboard", "/", "/register"],
+// };
 
 
-// export { auth as middleware } from "@/auth"
+export { auth as middleware } from "@/auth"
