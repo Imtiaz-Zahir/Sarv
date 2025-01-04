@@ -12,11 +12,10 @@ import {
   getConnectionById,
   getConnectionByName,
 } from "@/services/connection";
-import { verifyToken } from "@/services/jwt";
 import { getLinkById } from "@/services/link";
 import { getUsersByEmail } from "@/services/user";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth,signOut } from "@/auth";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 if (!rootDomain) {
@@ -45,26 +44,17 @@ export async function createConnectionAction({
     | "HTTP_STATUS"
     | "BASTION";
 }) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
-    redirect("/login");
-  }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 
@@ -88,7 +78,7 @@ export async function createConnectionAction({
       message: "Connection name already exists. Please choose a different name",
     };
   }
-
+  
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
   const domainName = name + "-" + link.name + "." + rootDomain;
@@ -140,26 +130,17 @@ export async function createConnectionAction({
 }
 
 export async function deleteConnectionAction(id: string) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get("token");
-
-  if (!token) {
-    cookieStore.delete("token");
+  if (!session?.user?.email) {
+    signOut();
     redirect("/login");
   }
-
-  const tokenData = verifyToken(token.value);
-
-  if (!tokenData) {
-    cookieStore.delete("token");
-    redirect("/login");
-  }
-
-  const user = await getUsersByEmail(tokenData.email);
+  
+  const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
-    cookieStore.delete("token");
+    signOut();
     redirect("/login");
   }
 

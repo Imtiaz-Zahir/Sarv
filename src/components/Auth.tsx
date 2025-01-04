@@ -1,59 +1,45 @@
 "use client";
-import React, { useContext } from "react";
-// import Image from "next/image";
-import { context } from "@/app/Context";
-import Link from "next/link";
-import { logoutUserAction } from "@/actions/user";
-import { useRouter } from "next/navigation"; 
-export default function Auth() {
-  const appContext = useContext(context);
-  const router = useRouter();
+import React from "react";
+import Image from "next/image";
+import { signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
+export default function Auth() {
+  const { data: session } = useSession();
   return (
     <div>
-      {appContext?.user ? (
+      {session ? (
         <div className="group">
           <button
             type="button"
+            onClick={() => signOut()}
             className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
-            onClick={async () => {
-              logoutUserAction().then((response) => {
-                if (response?.message) {
-                  alert(response.message);
-                } else {
-                  appContext.setUser(null);
-                  localStorage.removeItem("user");
-                  router.push("/");
-                }
-              });
-            }}
           >
-            {/* <Image
-              src={"/user.png"}
+            <Image
+              src={session.user?.image ?? "/user.png"}
               className="hover:group-hover relative"
               style={{ borderRadius: "100%" }}
               height={28}
               width={28}
               priority={true}
-              alt={appContext.user?.name ?? "User"}
+              alt={session.user?.name ?? "User"}
               unoptimized={true}
-            /> */}
+            />
             Sign out
           </button>
-          {/* <span className="text-center text-xs absolute z-10 bg-black text-white px-2 py-1 rounded mt-1 right-0 group-hover:visible invisible">
+          <span className="text-center text-xs absolute z-10 bg-black text-white px-2 py-1 rounded mt-1 right-0 group-hover:visible invisible">
             {session.user?.name ?? "User"}
             <br />
             {session.user?.email ?? "no email found"}
-          </span> */}
+          </span>
         </div>
       ) : (
-        <Link
-          href="/login"
-          // type="button"
-          // onClick={() => signIn("google")}
+        <button
+          type="button"
+          onClick={() => signIn("google", { redirectTo: "/dashboard" })}
           className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
         >
-          {/* <svg
+          <svg
             width="28"
             height="28"
             viewBox="0 0 24 24"
@@ -75,9 +61,9 @@ export default function Auth() {
               fill="#FBBC05"
               d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z"
             />
-          </svg> */}
+          </svg>
           Sign in
-        </Link>
+        </button>
       )}
     </div>
   );

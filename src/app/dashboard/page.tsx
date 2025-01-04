@@ -78,8 +78,9 @@ export default function Page() {
     setIsModalVisible(false);
   };
 
-  const handleSaveConnection = async () => {
+  const handleSaveConnection = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       if (loading) return;
       setLoading(true);
 
@@ -473,7 +474,7 @@ export default function Page() {
             <h2 className="text-xl font-semibold mb-4">
               {currentConnection ? "Edit Connection" : "Add New Connection"}
             </h2>
-            <form>
+            <form onSubmit={handleSaveConnection}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   URL
@@ -565,11 +566,7 @@ export default function Page() {
                 >
                   Cancel
                 </button>
-                <Button
-                  type="submit"
-                  loading={loading}
-                  onClick={handleSaveConnection}
-                >
+                <Button type="submit" loading={loading}>
                   {currentConnection ? "Save Changes" : "Add Connection"}
                 </Button>
 

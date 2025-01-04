@@ -4,17 +4,14 @@ const prisma = new PrismaClient();
 export async function createUser({
   name,
   email,
-  password,
 }: {
   name: string;
   email: string;
-  password: string;
 }) {
   return prisma.users.create({
     data: {
       email,
-      name,
-      password
+      name
     },
   });
 }

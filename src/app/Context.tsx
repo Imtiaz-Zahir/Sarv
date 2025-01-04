@@ -2,6 +2,7 @@
 import { createContext, useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { redirect } from "next/navigation";
+import { SessionProvider } from "next-auth/react";
 
 type User = {
   name: string;
@@ -39,7 +40,7 @@ export function Context({ children }: { children: React.ReactNode }) {
         logout,
       }}
     >
-      {children}
+      <SessionProvider>{children}</SessionProvider>
     </context.Provider>
   );
 }
