@@ -24,3 +24,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/dashboard", "/login", "/register"],
 };
+
+
+// export { auth as middleware } from "@/auth"
