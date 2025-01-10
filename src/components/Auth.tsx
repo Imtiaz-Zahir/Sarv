@@ -17,7 +17,7 @@ export default function Auth() {
           >
             <Image
               src={session.user?.image ?? "/user.png"}
-              className="hover:group-hover relative"
+              className="hover:group-hover relative overflow-hidden"
               style={{ borderRadius: "100%" }}
               height={28}
               width={28}

@@ -20,7 +20,7 @@ model Links {
   name         String        @unique
   tunnelId     String
   tunnelSecret String
-  userEmail       String
+  userEmail    String
   user         Users         @relation(fields: [userEmail], references: [email])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
