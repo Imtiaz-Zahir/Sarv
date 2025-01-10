@@ -31,18 +31,6 @@ export async function getLinks(userEmail?: string) {
       id: true,
       name: true,
       createdAt: true,
-      connections: {
-        select: {
-          id: true,
-          name: true,
-          createdAt: true,
-          updatedAt: true,
-          serviceIp: true,
-          servicePort: true,
-          serviceProtocol: true,
-          linkId: true,
-        },
-      },
     },
   });
 }
@@ -59,6 +47,26 @@ export async function getLinkById(id: string) {
   return prisma.links.findUnique({
     where: {
       id,
+    },
+    select: {
+      id: true,
+      name: true,
+      userEmail: true,
+      tunnelId: true,
+      tunnelSecret: true,
+      createdAt: true,
+      connections: {
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          serviceIp: true,
+          servicePort: true,
+          serviceProtocol: true,
+          linkId: true,
+        },
+      },
     },
   });
 }
