@@ -34,7 +34,7 @@ export default function Page() {
       if (response.link) {
         setLoading(false);
         setName("");
-        router.push("/dashboard/links/" + response.link.id);
+        router.push("/links/" + response.link.id);
       }
     } catch (error) {
       console.error(error);

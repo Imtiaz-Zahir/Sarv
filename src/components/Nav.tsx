@@ -1,28 +1,17 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Auth from "./Auth";
-import { context } from "@/app/Context";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Nav() {
-  const appContext = useContext(context);
-
-  // const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (window.scrollY > 0) setScrolled(true);
     window.addEventListener("scroll", () => setScrolled(window.scrollY > 0));
   }, []);
-
-  // useEffect(() => {
-  //   if (open) {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "auto";
-  //   }
-  // }, [open]);
 
   return (
     <nav
@@ -39,64 +28,74 @@ export default function Nav() {
           className="w-36 lg:w-52"
         />
       </Link>
-      {/* {open ? (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 20 20"
-          className="w-8 h-8 cursor-pointer lg:hidden"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          onClick={() => setOpen(false)}
-        >
-          <path
-            d="M6 18L18 6M6 6L18 18"
-            stroke="#2B2A2A"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          className="w-8 h-8 cursor-pointer lg:hidden"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          onClick={() => setOpen(true)}
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M3 5C3 4.44772 3.44772 4 4 4H16C16.5523 4 17 4.44772 17 5C17 5.55228 16.5523 6 16 6H4C3.44772 6 3 5.55228 3 5Z"
-            fill="#2B2A2A"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M3 10C3 9.44772 3.44772 9 4 9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H4C3.44772 11 3 10.5523 3 10Z"
-            fill="#2B2A2A"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M3 15C3 14.4477 3.44772 14 4 14H16C16.5523 14 17 14.4477 17 15C17 15.5523 16.5523 16 16 16H4C3.44772 16 3 15.5523 3 15Z"
-            fill="#2B2A2A"
-          />
-        </svg>
-      )} */}
 
       <div className="flex items-center gap-5 text-lg font-medium">
-        {appContext?.user && (
+        {session?.user && (
           <ul>
-            <Link href="/dashboard"> 
-              <li>Dashboard</li>
+            <Link href="/links">
+              <li>Links</li>
             </Link>
           </ul>
         )}
-        <Auth />
+        <div>
+          {session ? (
+            <div className="group">
+              <button
+                type="button"
+                onClick={() => signOut({redirectTo: '/'}) }
+                className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
+              >
+                <Image
+                  src={session.user?.image ?? "/user.png"}
+                  className="hover:group-hover relative overflow-hidden"
+                  style={{ borderRadius: "100%" }}
+                  height={28}
+                  width={28}
+                  priority={true}
+                  alt={session.user?.name ?? "User"}
+                  unoptimized={true}
+                />
+                Sign out
+              </button>
+              <span className="text-center text-xs absolute z-10 bg-black text-white px-2 py-1 rounded mt-1 right-0 group-hover:visible invisible">
+                {session.user?.name ?? "User"}
+                <br />
+                {session.user?.email ?? "no email found"}
+              </span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => signIn("google", { redirectTo: "/links" })}
+              className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill="#EA4335 "
+                  d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2936293 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z"
+                />
+                <path
+                  fill="#4A90E2"
+                  d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z"
+                />
+              </svg>
+              Sign in
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );

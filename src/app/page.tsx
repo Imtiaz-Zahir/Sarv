@@ -1,12 +1,12 @@
 import React from "react";
 import Link from "next/link";
-// import {auth} from "@/auth"
-// import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function page() {
-  // const session = await auth();
+  const session = await auth();
 
-  // if(session) redirect("/dashboard");
+  if (session) redirect("/links");
 
   return (
     <>
@@ -55,7 +55,7 @@ export default async function page() {
       </section>
 
       {/* Security Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 px-4 lg:px-28 lg:py-4">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Enterprise-Grade Security
