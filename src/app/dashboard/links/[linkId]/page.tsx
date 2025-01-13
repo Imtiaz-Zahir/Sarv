@@ -2,7 +2,10 @@ import { getLinkById } from "@/services/link";
 import React from "react";
 import AddConnection from "./AddConnection";
 import CopyButton from "./CopyButton";
-import ConnectionAction from "./ConnectionAction";
+import EditConnection from "./EditConnection";
+import DeleteConnection from "./DeleteConnection";
+import { auth } from "@/auth";
+import { signOut } from "next-auth/react";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 if (!rootDomain) {
@@ -14,10 +17,20 @@ export default async function page({
 }: {
   params: Promise<{ linkId: string }>;
 }) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    return signOut({ redirectTo: "/" });
+  }
+
   const { linkId } = await params;
 
   const link = await getLinkById(linkId);
   if (!link) return <div>Not Found</div>;
+
+  if (link.userEmail !== session.user.email) {
+    return <div>Unauthorized</div>;
+  }
 
   return (
     <>
@@ -26,11 +39,11 @@ export default async function page({
           Connection List of <span className="font-bold">{link.name}</span>
         </h1>
 
-        <div className="font-medium rounded border border-black flex items-center justify-between gap-1 relative min-w-48">
+        {/* <div className="font-medium rounded border border-black flex items-center justify-between gap-1 relative min-w-48">
           <div className="flex items-center gap-2 w-full justify-center">
             <p className="py-3 px-2">{link.name}</p>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="flex justify-center gap-5 w-full mt-5">
         <div className="max-w-4xl w-full">
@@ -58,10 +71,13 @@ export default async function page({
                   <td className="py-2 px-4 border-b">
                     {connection.servicePort}
                   </td>
-                  <ConnectionAction
-                    connection={connection}
-                    linkName={link.name}
-                  />
+                  <td className="py-2 px-4 border-b flex gap-3">
+                    <EditConnection
+                      connection={connection}
+                      linkName={link.name}
+                    />
+                    <DeleteConnection connectionId={connection.id} />
+                  </td>
                 </tr>
               ))}
             </tbody>

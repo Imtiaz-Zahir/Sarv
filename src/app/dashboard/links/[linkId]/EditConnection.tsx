@@ -14,8 +14,8 @@ export default function EditConnection({
   linkName,
 }: {
   connection: {
-    linkId: string;
     id: string;
+    linkId: string;
     name: string;
     createdAt: Date;
     updatedAt: Date;
