@@ -67,14 +67,14 @@ export default async function page({
             </tbody>
           </table>
         </div>
-        <Instruction tunnelSecret={link.tunnelSecret} />
+        <Instruction tunnelToken={link.tunnelToken} />
       </div>
     </>
   );
 }
 
-function Instruction({ tunnelSecret }: { tunnelSecret: string }) {
-  const installationCommand = `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${tunnelSecret}`;
+function Instruction({ tunnelToken }: { tunnelToken: string }) {
+  const installationCommand = `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${tunnelToken}`;
 
   return (
     <div>
