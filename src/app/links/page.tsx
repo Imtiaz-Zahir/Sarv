@@ -18,7 +18,7 @@ export default async function Page() {
 
   redirect(
     links.length > 0
-      ? "/dashboard/links/" + links[0].id
-      : "/dashboard/links/new"
+      ? "/links/" + links[0].id
+      : "/links/new"
   );
 }

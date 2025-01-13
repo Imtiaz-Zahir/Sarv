@@ -50,14 +50,14 @@ export async function createConnectionAction({
 
   if (!session?.user?.email) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const link = await getLinkById(linkId);

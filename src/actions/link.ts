@@ -24,14 +24,14 @@ export async function createLinkAction(name: string) {
 
   if (!session?.user?.email) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const existingLink = await getLinkByName(name);
@@ -93,14 +93,14 @@ export async function deleteLinkAction(id: string) {
 
   if (!session?.user?.email) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const link = await getLinkById(id);
@@ -138,14 +138,14 @@ export async function getLinksAction() {
 
   if (!session?.user?.email) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const links = await getLinks(user.email);
@@ -161,14 +161,14 @@ export async function getCommandAction(linkId: string) {
 
   if (!session?.user?.email) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
     signOut();
-    redirect("/login");
+    redirect("/");
   }
 
   const link = await getLinkById(linkId);
