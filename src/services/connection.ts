@@ -45,10 +45,19 @@ export function getConnectionsByLinkId(linkId: string) {
   });
 }
 
-export function getConnectionByName(name: string) {
+export function getConnectionByName({
+  linkId,
+  name,
+}: {
+  name: string;
+  linkId: string;
+}) {
   return prisma.connections.findUnique({
     where: {
-      name,
+      name_linkId: {
+        name,
+        linkId,
+      },
     },
   });
 }
@@ -57,6 +66,9 @@ export function getConnectionById(id: string) {
   return prisma.connections.findUnique({
     where: {
       id,
+    },
+    include: {
+      link: true,
     },
   });
 }
@@ -78,11 +90,11 @@ export function updateConnection(
     servicePort,
     serviceProtocol,
   }: {
-    name: string;
-    recordId: string;
-    serviceIp: string;
-    servicePort: number;
-    serviceProtocol:
+    name?: string;
+    recordId?: string;
+    serviceIp?: string;
+    servicePort?: number;
+    serviceProtocol?:
       | "HTTP"
       | "HTTPS"
       | "UNIX"

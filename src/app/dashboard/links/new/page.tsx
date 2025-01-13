@@ -65,14 +65,21 @@ export default function Page() {
           id="name"
           required
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+              if (e.target.value !== "" && !/^[a-zA-Z0-9-]+$/.test(e.target.value)) return;
+            
+            setName(e.target.value);
+          }}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
           placeholder="Enter link name"
         />
       </div>
       <strong className="text-xs text-gray-500 mt-2">Your URL will Be :</strong>
       <p className="text-xs text-gray-500">
-        {"<Connection Name>-" + `${name ? name : "<Link Name>"}` + "." + rootDomain}
+        {"<Connection Name>-" +
+          `${name ? name : "<Link Name>"}` +
+          "." +
+          rootDomain}
       </p>
 
       <Button type="submit" loading={loading} className="w-full mt-4">

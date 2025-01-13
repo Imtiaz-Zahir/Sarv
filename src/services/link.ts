@@ -5,19 +5,19 @@ export async function createLink({
   name,
   userEmail,
   tunnelId,
-  tunnelSecret,
+  tunnelToken,
 }: {
   name: string;
   userEmail: string;
   tunnelId: string;
-  tunnelSecret: string;
+  tunnelToken: string;
 }) {
   return prisma.links.create({
     data: {
       name,
       userEmail,
       tunnelId,
-      tunnelSecret,
+      tunnelToken,
     },
   });
 }
@@ -53,7 +53,7 @@ export async function getLinkById(id: string) {
       name: true,
       userEmail: true,
       tunnelId: true,
-      tunnelSecret: true,
+      tunnelToken: true,
       createdAt: true,
       connections: {
         select: {

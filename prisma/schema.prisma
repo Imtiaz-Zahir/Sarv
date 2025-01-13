@@ -16,15 +16,15 @@ model Users {
 }
 
 model Links {
-  id           String        @id @default(uuid())
-  name         String        @unique
-  tunnelId     String
-  tunnelSecret String
-  userEmail    String
-  user         Users         @relation(fields: [userEmail], references: [email])
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  connections  Connections[]
+  id          String        @id @default(uuid())
+  name        String        @unique
+  tunnelId    String
+  tunnelToken String
+  userEmail   String
+  user        Users         @relation(fields: [userEmail], references: [email])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  connections Connections[]
 }
 
 enum Protocol {
@@ -41,7 +41,7 @@ enum Protocol {
 
 model Connections {
   id              String   @id @default(uuid())
-  name            String   @unique
+  name            String
   serviceIp       String
   servicePort     Int
   serviceProtocol Protocol
@@ -50,4 +50,6 @@ model Connections {
   link            Links    @relation(fields: [linkId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@unique([name, linkId])
 }
