@@ -165,7 +165,7 @@ export async function deleteConnectionAction(id: string) {
   if (link.userEmail !== user.email)
     return {
       success: false,
-      message: "Unauthorized",
+      message: "You are not authorized to delete this connection",
     };
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
@@ -182,6 +182,10 @@ export async function deleteConnectionAction(id: string) {
   await deleteDnsRecord(connection.recordId);
 
   await deleteConnection(id);
+
+  return {
+    success: true,
+  };
 }
 
 export async function updateConnectionAction(
