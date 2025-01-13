@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Button from "@/components/Button";
-import { createConnectionAction } from "@/actions/connection";
+import { updateConnectionAction } from "@/actions/connection";
 import { useRouter } from "next/navigation";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
@@ -9,46 +9,92 @@ if (!rootDomain) {
   throw new Error("Root domain is not defined");
 }
 
-export default function AddConnection({
-  link,
+export default function EditConnection({
+  connection,
+  linkName,
 }: {
-  link: { id: string; name: string };
+  connection: {
+    linkId: string;
+    id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    serviceIp: string;
+    servicePort: number;
+    serviceProtocol:
+      | "HTTP"
+      | "HTTPS"
+      | "UNIX"
+      | "TCP"
+      | "SSH"
+      | "RDP"
+      | "SMB"
+      | "HTTP_STATUS"
+      | "BASTION";
+  };
+  linkName: string;
 }) {
   const router = useRouter();
-  const [newConnection, setNewConnection] = useState({
-    address: "",
-    ip: "",
-    port: "",
-    protocol: "",
-  });
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updated, setUpdated] = useState<{
+    name?: string;
+    serviceIp?: string;
+    servicePort?: string;
+    serviceProtocol?:
+      | "HTTP"
+      | "HTTPS"
+      | "UNIX"
+      | "TCP"
+      | "SSH"
+      | "RDP"
+      | "SMB"
+      | "HTTP_STATUS"
+      | "BASTION";
+  }>({});
 
-  async function handleSaveConnection(e: React.FormEvent<HTMLFormElement>) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
+    const key = e.target.name as
+      | "name"
+      | "serviceIp"
+      | "servicePort"
+      | "serviceProtocol";
+
+    if (e.target.name === "servicePort") {
+      const port = Number(e.target.value);
+      if (isNaN(port)) return;
+
+      if (port > 65535 || port < 0) return;
+    }
+
+    setUpdated({
+      ...updated,
+      [key]: e.target.value,
+    });
+  }
+
+  async function handleEditConnection(e: React.FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
       if (loading) return;
       setLoading(true);
 
-      if (
-        !newConnection.address ||
-        !newConnection.ip ||
-        !newConnection.port ||
-        !newConnection.protocol
-      ) {
-        alert("Please fill all the fields");
+      if (Object.keys(updated).length === 0) {
+        setIsModalOpen(false);
+        setUpdated({});
         setLoading(false);
         return;
       }
 
-      const newConnectionData = await createConnectionAction({
-        linkId: link.id,
-        name: newConnection.address,
-        serviceIp: newConnection.ip,
-        servicePort: parseInt(newConnection.port),
-        serviceProtocol: newConnection.protocol.toUpperCase() as
-          | "HTTP"
-          | "HTTPS",
+      const newConnectionData = await updateConnectionAction(connection.id, {
+        name: updated.name,
+        serviceIp: updated.serviceIp,
+        servicePort: updated.servicePort
+          ? parseInt(updated.servicePort)
+          : undefined,
+        serviceProtocol: updated.serviceProtocol,
       });
 
       if (newConnectionData.id) {
@@ -58,12 +104,7 @@ export default function AddConnection({
       }
 
       setLoading(false);
-      setNewConnection({
-        address: "",
-        ip: "",
-        port: "",
-        protocol: "",
-      });
+      setUpdated({});
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -74,19 +115,22 @@ export default function AddConnection({
 
   return (
     <>
-      <div className="flex justify-end mb-4">
-        <button
-          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add New Connection
-        </button>
-      </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        className="cursor-pointer w-5 h-5"
+        onClick={() => setIsModalOpen(true)}
+      >
+        <path
+          fill="#3b82f6"
+          d="M5,18H9.24a1,1,0,0,0,.71-.29l6.92-6.93h0L19.71,8a1,1,0,0,0,0-1.42L15.47,2.29a1,1,0,0,0-1.42,0L11.23,5.12h0L4.29,12.05a1,1,0,0,0-.29.71V17A1,1,0,0,0,5,18ZM14.76,4.41l2.83,2.83L16.17,8.66,13.34,5.83ZM6,13.17l5.93-5.93,2.83,2.83L8.83,16H6ZM21,20H3a1,1,0,0,0,0,2H21a1,1,0,0,0,0-2Z"
+        ></path>
+      </svg>
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
-            <h2 className="text-xl font-semibold mb-4">Add New Connection</h2>
-            <form onSubmit={handleSaveConnection}>
+            <h2 className="text-xl font-semibold mb-4">Edit Connection</h2>
+            <form onSubmit={handleEditConnection}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   URL
@@ -94,20 +138,9 @@ export default function AddConnection({
                 <div className="flex items-center">
                   <input
                     type="text"
-                    name="address"
-                    value={newConnection.address}
-                    onChange={(e) => {
-                      if (
-                        e.target.value !== "" &&
-                        !/^[a-zA-Z0-9-]+$/.test(e.target.value)
-                      )
-                        return;
-
-                      setNewConnection({
-                        ...newConnection,
-                        address: e.target.value,
-                      });
-                    }}
+                    name="name"
+                    value={updated.name || connection.name}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -115,7 +148,7 @@ export default function AddConnection({
                     -
                   </span>
                   <span className="px-4 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500 whitespace-nowrap">
-                    {link.name}
+                    {linkName}
                   </span>
                   <span className="px-1 py-2 bg-gray-200 border-t border-b border-r border-gray-300 text-gray-500">
                     .
@@ -127,7 +160,8 @@ export default function AddConnection({
                 <p className="text-xs text-gray-500 flex gap-2 items-center mt-2">
                   Your URL will be
                   <strong>
-                    {newConnection.address + "-" + link.name + "." + rootDomain}
+                    {updated.name ||
+                      connection.name + "-" + linkName + "." + rootDomain}
                   </strong>
                 </p>
               </div>
@@ -138,14 +172,11 @@ export default function AddConnection({
                 </label>
                 <div className="flex items-center space-x-0">
                   <select
-                    name="protocol"
-                    value={newConnection.protocol}
-                    onChange={(e) =>
-                      setNewConnection({
-                        ...newConnection,
-                        protocol: e.target.value,
-                      })
+                    name="serviceProtocol"
+                    value={
+                      updated.serviceProtocol || connection.serviceProtocol
                     }
+                    onChange={handleChange}
                     className="px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   >
@@ -162,11 +193,9 @@ export default function AddConnection({
 
                   <input
                     type="text"
-                    name="ip"
-                    value={newConnection.ip}
-                    onChange={(e) =>
-                      setNewConnection({ ...newConnection, ip: e.target.value })
-                    }
+                    name="serviceIp"
+                    value={updated.serviceIp || connection.serviceIp}
+                    onChange={handleChange}
                     placeholder="localhost"
                     className="flex-grow px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
@@ -178,18 +207,11 @@ export default function AddConnection({
 
                   <input
                     type="text"
-                    name="port"
-                    value={newConnection.port}
-                    onChange={(e) => {
-                      const port = Number(e.target.value);
-                      if (isNaN(port)) return;
-                      if (port > 65535 || port < 0) return;
-
-                      setNewConnection({
-                        ...newConnection,
-                        port: e.target.value,
-                      });
-                    }}
+                    name="servicePort"
+                    value={
+                      updated.servicePort || connection.servicePort.toString()
+                    }
+                    onChange={handleChange}
                     placeholder="8080"
                     className="w-24 px-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
@@ -206,7 +228,7 @@ export default function AddConnection({
                   Cancel
                 </button>
                 <Button type="submit" loading={loading}>
-                  Add Connection
+                  Save Connection
                 </Button>
               </div>
             </form>

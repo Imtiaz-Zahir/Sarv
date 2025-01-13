@@ -5,7 +5,6 @@ CREATE TYPE "Protocol" AS ENUM ('HTTP', 'HTTPS', 'TCP', 'SSH', 'RDP', 'UNIX', 'S
 CREATE TABLE "Users" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -17,7 +16,7 @@ CREATE TABLE "Links" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "tunnelId" TEXT NOT NULL,
-    "tunnelSecret" TEXT NOT NULL,
+    "tunnelToken" TEXT NOT NULL,
     "userEmail" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -47,7 +46,7 @@ CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 CREATE UNIQUE INDEX "Links_name_key" ON "Links"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Connections_name_key" ON "Connections"("name");
+CREATE UNIQUE INDEX "Connections_name_linkId_key" ON "Connections"("name", "linkId");
 
 -- AddForeignKey
 ALTER TABLE "Links" ADD CONSTRAINT "Links_userEmail_fkey" FOREIGN KEY ("userEmail") REFERENCES "Users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;

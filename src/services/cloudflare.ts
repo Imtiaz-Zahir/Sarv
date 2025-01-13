@@ -94,3 +94,21 @@ export function deleteDnsRecord(recordId: string) {
     zone_id: zoneId as string,
   });
 }
+
+export function updateDnsRecord({
+  recordId,
+  domainName,
+  hostname,
+}: {
+  recordId: string;
+  domainName: string;
+  hostname: string;
+}) {
+  return client.dns.records.update(recordId, {
+    type: "CNAME",
+    content: hostname,
+    name: domainName,
+    zone_id: zoneId as string,
+    proxied: true,
+  });
+}

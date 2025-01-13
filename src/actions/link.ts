@@ -17,7 +17,7 @@ import {
 import { getUsersByEmail } from "@/services/user";
 import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
-import {auth,signOut} from "@/auth"
+import { auth, signOut } from "@/auth";
 
 export async function createLinkAction(name: string) {
   const session = await auth();
@@ -26,7 +26,7 @@ export async function createLinkAction(name: string) {
     signOut();
     redirect("/login");
   }
-  
+
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
@@ -77,7 +77,7 @@ export async function createLinkAction(name: string) {
 
   const link = await createLink({
     name,
-    tunnelSecret: tunnel.token,
+    tunnelToken: tunnel.token,
     tunnelId: tunnel.id,
     userEmail: user.email,
   });
@@ -95,7 +95,7 @@ export async function deleteLinkAction(id: string) {
     signOut();
     redirect("/login");
   }
-  
+
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
@@ -120,9 +120,10 @@ export async function deleteLinkAction(id: string) {
   const tunnel = await getTunnelConfiguration(link.tunnelId);
 
   for (const ingress of tunnel.config.ingress) {
-    const connection = await getConnectionByName(
-      ingress.hostname.split(".")[0]
-    );
+    const connection = await getConnectionByName({
+      name: ingress.hostname.split(".")[0],
+      linkId: id,
+    });
 
     if (connection) await deleteDnsRecord(connection.recordId);
   }
@@ -139,7 +140,7 @@ export async function getLinksAction() {
     signOut();
     redirect("/login");
   }
-  
+
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
@@ -162,7 +163,7 @@ export async function getCommandAction(linkId: string) {
     signOut();
     redirect("/login");
   }
-  
+
   const user = await getUsersByEmail(session.user?.email);
 
   if (!user) {
@@ -186,6 +187,6 @@ export async function getCommandAction(linkId: string) {
 
   return {
     success: true,
-    command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelSecret}; Write-Host "setup completed"`,
+    command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelToken}; Write-Host "setup completed"`,
   };
 }
