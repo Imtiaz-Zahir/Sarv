@@ -171,7 +171,7 @@ export async function deleteConnectionAction(id: string) {
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
   const updatedIngress = configuration.config.ingress.filter(
-    (ingress) => ingress.hostname.split(".")[0] !== connection.name
+    (ingress) => ingress.hostname !== connection.name + "-" + link.name + "." + rootDomain
   );
 
   await updateTunnelConfiguration({

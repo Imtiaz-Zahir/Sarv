@@ -4,8 +4,10 @@ import AddConnection from "./AddConnection";
 import CopyButton from "./CopyButton";
 import EditConnection from "./EditConnection";
 import DeleteConnection from "./DeleteConnection";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { signOut } from "next-auth/react";
+import ConnectionStatus from "./ConnectionStatus";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 if (!rootDomain) {
@@ -48,38 +50,43 @@ export default async function page({
       <div className="flex justify-center gap-5 w-full mt-5">
         <div className="max-w-4xl w-full">
           <AddConnection link={{ id: link.id, name: link.name }} />
-          <table className="w-full table-auto border-collapse border border-gray-300">
+          <table className="w-full table-auto border-collapse border border-gray-300 text-center">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border-b text-left">Url</th>
-                <th className="py-2 px-4 border-b text-left">Protocol</th>
-                <th className="py-2 px-4 border-b text-left">IP</th>
-                <th className="py-2 px-4 border-b text-left">Port</th>
-                <th className="py-2 px-4 border-b text-left">Action</th>
+              <tr className="bg-gray-100 border-b">
+                <th className="py-2 px-4">Status</th>
+                <th className="py-2 px-4">Name</th>
+                <th className="py-2 px-4">Protocol</th>
+                <th className="py-2 px-4">IP</th>
+                <th className="py-2 px-4">Port</th>
+                <th className="py-2 px-4">Action</th>
               </tr>
             </thead>
             <tbody>
-              {link.connections.map((connection, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border-b">
-                    {connection.name + "-" + link.name + "." + rootDomain}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {connection.serviceProtocol}
-                  </td>
-                  <td className="py-2 px-4 border-b">{connection.serviceIp}</td>
-                  <td className="py-2 px-4 border-b">
-                    {connection.servicePort}
-                  </td>
-                  <td className="py-2 px-4 border-b flex gap-3">
-                    <EditConnection
-                      connection={connection}
-                      linkName={link.name}
-                    />
-                    <DeleteConnection connectionId={connection.id} />
-                  </td>
-                </tr>
-              ))}
+              {link.connections.map((connection, index) => {
+                const domain = `https://${connection.name}-${link.name}.${rootDomain}`;
+                return (
+                  <tr key={index} className="hover:bg-gray-50 border-b">
+                    <td className="flex justify-center items-center">
+                      <ConnectionStatus href={domain} />
+                    </td>
+                    <td className="py-2 px-4 text-blue-500">
+                      <Link href={domain} target="_blank">
+                        {connection.name}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4">{connection.serviceProtocol}</td>
+                    <td className="py-2 px-4">{connection.serviceIp}</td>
+                    <td className="py-2 px-4">{connection.servicePort}</td>
+                    <td className="py-2 px-4 flex gap-3 justify-center items-center">
+                      <EditConnection
+                        connection={connection}
+                        linkName={link.name}
+                      />
+                      <DeleteConnection connectionId={connection.id} />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

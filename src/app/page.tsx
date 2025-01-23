@@ -24,38 +24,11 @@ export default async function page() {
             certificates. One simple command gives you enterprise-grade security
             and global connectivity.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center bg-yellow-400 text-black py-3 px-8 rounded-lg text-xl font-semibold hover:bg-yellow-300 transition duration-300"
-            >
-              Login to Get Started
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="ml-2 h-5 w-5"
-              >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
-              {/* <ArrowRight className="ml-2 h-5 w-5" /> */}
-            </Link>
-            {/* <a href="#features" className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm text-white py-3 px-8 rounded-lg text-xl font-semibold hover:bg-white/20 transition duration-300">
-              Learn More
-            </a> */}
-          </div>
         </div>
       </section>
 
       {/* Security Features Section */}
-      <section className="py-20 bg-gray-50 px-4 lg:px-28 lg:py-4">
+      <section className="lg:py-20 bg-gray-50 px-4 lg:px-28 py-4">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Enterprise-Grade Security
@@ -141,7 +114,7 @@ export default async function page() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white">
+      <section id="how-it-works" className="lg:py-20 py-4 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             How It Works
@@ -225,7 +198,7 @@ export default async function page() {
       </section>
 
       {/* Features List Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="lg:py-20 py-4 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Everything You Need
@@ -329,48 +302,6 @@ export default async function page() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-blue-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Start Hosting?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Get started with secure, unlimited hosting in minutes. Create your
-            account to receive your personal hosting command.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center bg-yellow-400 text-black py-3 px-8 rounded-lg text-xl font-semibold hover:bg-yellow-300 transition duration-300"
-            >
-              Create Account
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="ml-2 h-5 w-5"
-              >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm text-white py-3 px-8 rounded-lg text-xl font-semibold hover:bg-white/20 transition duration-300"
-            >
-              Login
-            </Link>
           </div>
         </div>
       </section>
