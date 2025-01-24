@@ -27,7 +27,7 @@ export default async function page() {
       </section>
 
       {/* Security Features Section */}
-      <section className="lg:py-20 bg-gray-50 px-4 lg:px-28 py-4">
+      <section className="lg:py-20 py-4 bg-gray-50 px-4 lg:px-28">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Enterprise-Grade Security
@@ -113,7 +113,7 @@ export default async function page() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="lg:py-20 py-4 bg-white">
+      <section className="lg:py-20 py-4 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             How It Works
