@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   title: "Sarv - Connect your applications to the internet",
   description:
     "Sarv is a simple, fast, and secure way to connect your applications to the internet.",
+  openGraph: {
+    title: "Sarv - Connect your applications to the internet",
+    description:
+      "Sarv is a simple, fast, and secure way to connect your applications to the internet.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
