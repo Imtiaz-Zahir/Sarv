@@ -25,7 +25,7 @@ export default function Nav() {
           alt="logo"
           width={208}
           height={45}
-          className="w-36 lg:w-52"
+          className="w-40"
         />
       </Link>
 

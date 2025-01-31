@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Sarv",
+  title: "Sarv - Connect your applications to the internet",
   description:
     "Sarv is a simple, fast, and secure way to connect your applications to the internet.",
 };
