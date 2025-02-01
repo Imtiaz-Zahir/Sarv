@@ -50,45 +50,48 @@ export default async function page({
       <div className="flex flex-col lg:flex-row justify-center gap-5 w-full mt-5">
         <div className="flex-1 w-full">
           <AddConnection link={{ id: link.id, name: link.name }} />
-          <table className="w-full table-auto border-collapse border border-gray-300 text-center">
-            <thead>
-              <tr className="bg-gray-100 border-b">
-                {/* <th className="py-2 px-4">Status</th> */}
-                <th className="py-2 px-4">Name</th>
-                <th className="py-2 px-4">Protocol</th>
-                <th className="py-2 px-4">IP</th>
-                <th className="py-2 px-4">Port</th>
-                <th className="py-2 px-4">Action</th>
+          <div className="w-full overflow-x-auto rounded-lg shadow">
+      <table className="w-full table-auto border-collapse min-w-[640px]">
+        <thead>
+          <tr className="bg-gray-100 border-b">
+            <th className="py-3 px-4 text-left font-semibold">Name</th>
+            <th className="py-3 px-4 text-left font-semibold">Protocol</th>
+            <th className="py-3 px-4 text-left font-semibold">IP</th>
+            <th className="py-3 px-4 text-left font-semibold">Port</th>
+            <th className="py-3 px-4 text-left font-semibold">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {link.connections.map((connection, index) => {
+            const domain = `https://${connection.name}-${link.name}.${rootDomain}`;
+            return (
+              <tr 
+                key={index} 
+                className="border-b hover:bg-gray-50 transition-colors"
+              >
+                <td className="py-3 px-4 text-blue-500">
+                  <Link href={domain} target="_blank" className="hover:underline">
+                    {connection.name}
+                  </Link>
+                </td>
+                <td className="py-3 px-4">{connection.serviceProtocol}</td>
+                <td className="py-3 px-4">{connection.serviceIp}</td>
+                <td className="py-3 px-4">{connection.servicePort}</td>
+                <td className="py-3 px-4">
+                  <div className="flex gap-3 items-center">
+                    <EditConnection
+                      connection={connection}
+                      linkName={link.name}
+                    />
+                    <DeleteConnection connectionId={connection.id} />
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {link.connections.map((connection, index) => {
-                const domain = `https://${connection.name}-${link.name}.${rootDomain}`;
-                return (
-                  <tr key={index} className="hover:bg-gray-50 border-b">
-                    {/* <td className="flex justify-center items-center">
-                      <ConnectionStatus href={domain} />
-                    </td> */}
-                    <td className="py-2 px-4 text-blue-500">
-                      <Link href={domain} target="_blank">
-                        {connection.name}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">{connection.serviceProtocol}</td>
-                    <td className="py-2 px-4">{connection.serviceIp}</td>
-                    <td className="py-2 px-4">{connection.servicePort}</td>
-                    <td className="py-2 px-4 flex gap-3 justify-center items-center">
-                      <EditConnection
-                        connection={connection}
-                        linkName={link.name}
-                      />
-                      <DeleteConnection connectionId={connection.id} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
         </div>
         <Activation
           tunnel={{

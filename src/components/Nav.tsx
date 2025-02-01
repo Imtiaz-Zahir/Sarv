@@ -30,13 +30,13 @@ export default function Nav() {
       </Link>
 
       <div className="flex items-center gap-5 text-lg font-medium">
-        {session?.user && (
+        {/* {session?.user && (
           <ul>
             <Link href="/links">
               <li>Links</li>
             </Link>
           </ul>
-        )}
+        )} */}
         <div>
           {session ? (
             <div className="group">

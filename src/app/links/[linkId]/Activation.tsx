@@ -8,7 +8,7 @@ export default function Activation({
 }: {
   tunnel: { token: string; name: string };
 }) {
-  const [exe, setExe] = React.useState(false);
+  const [exe, setExe] = React.useState(true);
 
   const installationCommand = `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${tunnel.token}`;
 
