@@ -44,47 +44,55 @@ export default function Page() {
   }
 
   return (
-    <form
-      className="w-full mt-5 bg-white drop-shadow-lg rounded-lg p-6 max-w-md mx-auto"
-      onSubmit={handelAddLink}
-    >
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        Create a New Link
-      </h2>
+    <section className="px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-28 lg:py-4 py-2">
+      <form
+        className="w-full mt-5 bg-white drop-shadow-lg rounded-lg p-6 max-w-md mx-auto"
+        onSubmit={handelAddLink}
+      >
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Create a New Link
+        </h2>
 
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Link Name
-        </label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          value={name}
-          onChange={(e) => {
-              if (e.target.value !== "" && !/^[a-zA-Z0-9-]+$/.test(e.target.value)) return;
-            
-            setName(e.target.value);
-          }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-          placeholder="Enter link name"
-        />
-      </div>
-      <strong className="text-xs text-gray-500 mt-2">Your URL will Be :</strong>
-      <p className="text-xs text-gray-500">
-        {"<Connection Name>-" +
-          `${name ? name : "<Link Name>"}` +
-          "." +
-          rootDomain}
-      </p>
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Link Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            required
+            value={name}
+            onChange={(e) => {
+              if (
+                e.target.value !== "" &&
+                !/^[a-zA-Z0-9-]+$/.test(e.target.value)
+              )
+                return;
 
-      <Button type="submit" loading={loading} className="w-full mt-4">
-        Create Link
-      </Button>
-    </form>
+              setName(e.target.value);
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+            placeholder="Enter link name"
+          />
+        </div>
+        <strong className="text-xs text-gray-500 mt-2">
+          Your URL will Be :
+        </strong>
+        <p className="text-xs text-gray-500">
+          {"<Connection Name>-" +
+            `${name ? name : "<Link Name>"}` +
+            "." +
+            rootDomain}
+        </p>
+
+        <Button type="submit" loading={loading} className="w-full mt-4">
+          Create Link
+        </Button>
+      </form>
+    </section>
   );
 }

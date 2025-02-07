@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useActiveLink } from "@/app/Context";
 
 export default function Nav() {
   const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
+  const { activeLink } = useActiveLink();
 
   useEffect(() => {
     if (window.scrollY > 0) setScrolled(true);
@@ -15,35 +17,45 @@ export default function Nav() {
 
   return (
     <nav
-      className={`px-4 lg:px-28 lg:py-4 py-2 flex items-center justify-between sticky top-0 bg-white z-50 border-b ${
+      className={`px-4 lg:px-28 py-2 flex items-center justify-between sticky top-0 bg-white z-50 border-b ${
         scrolled && "shadow-lg"
       }`}
     >
-      <Link href="/">
-        <Image
-          src="/logo.png"
-          alt="logo"
-          width={208}
-          height={45}
-          className="w-40"
-        />
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={160}
+            height={44}
+            quality={100}
+            priority={true}
+            className="w-40"
+          />
+        </Link>
+        {activeLink && (
+          <div className="hidden sm:flex items-center gap-2">
+            <svg strokeLinejoin="round" viewBox="0 0 16 16" className="h-9 w-9">
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M4.01526 15.3939L4.3107 14.7046L10.3107 0.704556L10.6061 0.0151978L11.9849 0.606077L11.6894 1.29544L5.68942 15.2954L5.39398 15.9848L4.01526 15.3939Z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            <h2 className="text-2xl font-medium">{activeLink}</h2>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center gap-5 text-lg font-medium">
-        {/* {session?.user && (
-          <ul>
-            <Link href="/links">
-              <li>Links</li>
-            </Link>
-          </ul>
-        )} */}
         <div>
           {session ? (
-            <div className="group">
+            <div className="group relative">
               <button
                 type="button"
-                onClick={() => signOut({redirectTo: '/'}) }
-                className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
+                onClick={() => signOut({ redirectTo: "/" })}
+                className="bg-blue-700 text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
               >
                 <Image
                   src={session.user?.image ?? "/user.png"}
@@ -55,9 +67,9 @@ export default function Nav() {
                   alt={session.user?.name ?? "User"}
                   unoptimized={true}
                 />
-                Sign out
+                Logout
               </button>
-              <span className="text-center text-xs absolute z-10 bg-black text-white px-2 py-1 rounded mt-1 right-0 group-hover:visible invisible">
+              <span className="text-center text-xs absolute z-10 bg-blue-300 px-2 py-1 rounded mt-1 right-0 group-hover:visible invisible">
                 {session.user?.name ?? "User"}
                 <br />
                 {session.user?.email ?? "no email found"}
@@ -67,7 +79,7 @@ export default function Nav() {
             <button
               type="button"
               onClick={() => signIn("google", { redirectTo: "/links" })}
-              className="bg-black text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
+              className="bg-blue-700 text-white py-2 px-5 rounded flex items-center gap-2 font-medium"
             >
               <svg
                 width="28"

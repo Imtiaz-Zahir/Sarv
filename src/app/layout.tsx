@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
+import Context from "./Context";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -33,8 +34,10 @@ export default function RootLayout({
         <body
           className={`${poppins.className} antialiased max-w-[1920px] mx-auto`}
         >
-          <Nav />
-          {children}
+          <Context>
+            <Nav />
+            {children}
+          </Context>
         </body>
       </SessionProvider>
       <Analytics />

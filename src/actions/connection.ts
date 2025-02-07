@@ -171,7 +171,8 @@ export async function deleteConnectionAction(id: string) {
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
   const updatedIngress = configuration.config.ingress.filter(
-    (ingress) => ingress.hostname !== connection.name + "-" + link.name + "." + rootDomain
+    (ingress) =>
+      ingress.hostname !== connection.name + "-" + link.name + "." + rootDomain
   );
 
   await updateTunnelConfiguration({
@@ -269,18 +270,18 @@ export async function updateConnectionAction(
     if (ingress.hostname.split("-")[0] === connection.name) {
       return {
         hostname:
-          (name || connection.name) +
+          (name ?? connection.name) +
           "-" +
           connection.link.name +
           "." +
           rootDomain,
         service:
-          (serviceProtocol?.toLocaleLowerCase() ||
+          (serviceProtocol?.toLocaleLowerCase() ??
             connection.serviceProtocol.toLocaleLowerCase()) +
           "://" +
-          (serviceIp || connection.serviceIp) +
+          (serviceIp ?? connection.serviceIp) +
           ":" +
-          (servicePort || connection.servicePort),
+          (servicePort ?? connection.servicePort),
       };
     }
 
@@ -324,4 +325,36 @@ export async function updateConnectionAction(
     createdAt: updatedConnection.createdAt,
     updatedAt: updatedConnection.updatedAt,
   };
+}
+
+export async function getConnectionStatusAction(url: string) {
+  try {
+    const cloudflareTunnelErrorStatusCodes = [
+      502, // Bad Gateway
+      520, // Web Server Returned an Unknown Error
+      521, // Web Server Is Down
+      522, // Connection Timed Out
+      523, // Origin Is Unreachable
+      524, // A Timeout Occurred
+      525, // SSL Handshake Failed
+      526, // Invalid SSL Certificate
+      527, // Railgun Listener to Origin Error
+      530, // Origin DNS Error
+    ];
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!cloudflareTunnelErrorStatusCodes.includes(response.status)) {
+      return "active";
+    } else {
+      return "inactive";
+    }
+  } catch (error) {
+    console.error(error);
+    return "inactive";
+  }
 }
