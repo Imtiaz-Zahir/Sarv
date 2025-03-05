@@ -8,7 +8,7 @@ export default function Activation({
   tunnel: { token: string; name: string; id: string };
 }>) {
   const [active, setActive] = React.useState<"installer" | "command">(
-    "installer"
+    "command"
   );
   const { setActiveLink } = useActiveLink();
 
@@ -151,7 +151,20 @@ function DownloadButton({
   downloadLink: string;
   os: string;
 }>) {
+  const [downloading, setDownloading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (downloading) {
+      setTimeout(() => {
+        setDownloading(false);
+      }, 5000);
+    }
+  }, [downloading]);
+
   async function handleDownload() {
+    if (downloading) return;
+    setDownloading(true);
+
     const response = await fetch(downloadLink);
     const blob = await response.blob();
 
@@ -179,7 +192,7 @@ function DownloadButton({
       onClick={handleDownload}
       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
     >
-      Download
+      {downloading ? "Downloading..." : "Download"}
     </button>
   );
 }
