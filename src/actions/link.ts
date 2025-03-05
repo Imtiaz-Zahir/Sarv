@@ -190,3 +190,4 @@ export async function getCommandAction(linkId: string) {
     command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelToken}; Write-Host "setup completed"`,
   };
 }
+

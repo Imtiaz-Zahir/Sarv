@@ -5,7 +5,7 @@ import React from "react";
 export default function Activation({
   tunnel,
 }: Readonly<{
-  tunnel: { token: string; name: string };
+  tunnel: { token: string; name: string; id: string };
 }>) {
   const [active, setActive] = React.useState<"installer" | "command">(
     "installer"
@@ -21,7 +21,7 @@ export default function Activation({
       name: "Windows",
       installer: {
         description: ".exe installer",
-        downloadLink: "/link-activator.exe",
+        downloadLink: `/api/download/${tunnel.id}`,
       },
       command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service uninstall; cloudflared.exe service install ${tunnel.token}`,
     },
@@ -169,7 +169,7 @@ function DownloadButton({
     const url = window.URL.createObjectURL(newExeBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = tunnel.name + "-activator.exe";
+    a.download = tunnel.name + "-activator.zip";
     a.click();
     window.URL.revokeObjectURL(url);
   }

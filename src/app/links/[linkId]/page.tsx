@@ -89,6 +89,7 @@ export default async function page({
         tunnel={{
           token: link.tunnelToken,
           name: link.name,
+          id: link.id,
         }}
       />
     </section>

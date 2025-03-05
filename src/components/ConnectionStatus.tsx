@@ -21,9 +21,18 @@ export default function ConnectionStatus({ href }: Readonly<{ href: string }>) {
 
     checkStatus();
 
-    const interval = setInterval(() => {
+    let interval = setInterval(() => {
       checkStatus();
     }, 30000);
+
+    window.onblur = () => clearInterval(interval);
+
+    window.onfocus = () => {
+      checkStatus();
+      interval = setInterval(() => {
+        checkStatus();
+      }, 30000);
+    };
 
     return () => clearInterval(interval);
   }, [href]);

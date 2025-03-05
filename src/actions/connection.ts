@@ -354,7 +354,6 @@ export async function getConnectionStatusAction(url: string) {
       return "inactive";
     }
   } catch (error) {
-    console.error(error);
-    return "inactive";
+    return error ? "inactive" : "inactive";
   }
 }
