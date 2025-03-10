@@ -8,7 +8,7 @@ export default function Activation({
   tunnel: { token: string; name: string; id: string };
 }>) {
   const [active, setActive] = React.useState<"installer" | "command">(
-    "command"
+    "installer"
   );
   const { setActiveLink } = useActiveLink();
 
@@ -182,7 +182,7 @@ function DownloadButton({
     const url = window.URL.createObjectURL(newExeBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = tunnel.name + "-activator.zip";
+    a.download = tunnel.name + "-activator.exe";
     a.click();
     window.URL.revokeObjectURL(url);
   }

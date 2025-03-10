@@ -1,86 +1,103 @@
 import { getLinkById } from "@/services/link";
-import archiver from "archiver";
-import { Readable } from "stream";
+import type { NextRequest } from "next/server";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ linkId: string }> }
 ) {
-  const { linkId } = await params;
-  const baseUri = new URL(request.url).origin;
-
-  const link = await getLinkById(linkId, false);
-
-  if (!link) {
-    return new Response("Link not found", { status: 404 });
-  }
-
-  const activatorResponse = await fetch(baseUri + "/link-activator.exe");
-
-  if (!activatorResponse.ok || !activatorResponse.body) {
-    return new Response("Activator not found", { status: 404 });
-  }
-
-  // Create archiver instance
-  const archive = archiver("zip", {
-    zlib: { level: 9 }, // Compression level
-  });
-
-  const zipStream = new ReadableStream({
-    start(controller) {
-      archive.on("data", (chunk) => {
-        controller.enqueue(chunk);
-      });
-
-      archive.on("end", () => {
-        controller.close();
-      });
-
-      archive.on("error", (err) => {
-        controller.error(err);
-      });
-    },
-  });
-
-  // Create response with stream
-  const response = new Response(zipStream, {
-    headers: {
-      "Content-Type": "application/zip",
-      "Content-Disposition": `attachment; filename=${link.name}-activator.zip`,
-    },
-  });
-
-  // Handle archive errors
-  archive.on("error", (err) => {
-    console.error("Archive error:", err);
-  });
-
   try {
-    // Pipe the activatorResponse.body directly into the archive
+    // Extract and validate linkId
+    const { linkId } = await params;
+    if (!linkId?.trim()) {
+      return new Response("Invalid link ID", { status: 400 });
+    }
+
+    const baseUri = new URL(request.url).origin;
+
+    // Fetch link information
+    let link;
+    try {
+      link = await getLinkById(linkId, false);
+    } catch (error) {
+      console.error("[LINK_ACTIVATOR] Database error:", error);
+      return new Response("Internal server error", { status: 500 });
+    }
+
+    if (!link) {
+      console.warn(`[LINK_ACTIVATOR] Link not found: ${linkId}`);
+      return new Response("Link not found", { status: 404 });
+    }
+
+    // Validate tunnel token presence
+    if (!link.tunnelToken?.trim()) {
+      console.error(
+        `[LINK_ACTIVATOR] Missing tunnel token for link: ${linkId}`
+      );
+      return new Response("Invalid link configuration", { status: 500 });
+    }
+
+    // Fetch activator executable
+    let activatorResponse;
+    try {
+      activatorResponse = await fetch(`${baseUri}/link-activator.exe`);
+    } catch (error) {
+      console.error(
+        "[LINK_ACTIVATOR] Network error fetching activator:",
+        error
+      );
+      return new Response("Internal server error", { status: 500 });
+    }
+
+    if (!activatorResponse.ok || !activatorResponse.body) {
+      console.error(
+        "[LINK_ACTIVATOR] Activator not found at:",
+        `${baseUri}/link-activator.exe`
+      );
+      return new Response("Activator not found", { status: 404 });
+    }
+
+    // Create modified executable stream
     const reader = activatorResponse.body.getReader();
-    const exeStream = new Readable({
-      async read() {
-        const { done, value } = await reader.read();
-        if (done) {
-          this.push(null);
-        } else {
-          this.push(Buffer.from(value));
+
+    const exeStream = new ReadableStream({
+      async start(controller) {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              // Append tunnel token to the end of the executable
+              const tokenData = new TextEncoder().encode(
+                `TOKEN_START::${link.tunnelToken}::TOKEN_END`
+              );
+              controller.enqueue(tokenData);
+              controller.close();
+              break;
+            }
+            controller.enqueue(value);
+          }
+        } catch (error) {
+          console.error("[LINK_ACTIVATOR] Stream error:", error);
+          controller.error(error);
         }
+      },
+      cancel() {
+        console.log("[LINK_ACTIVATOR] Stream cancelled by client");
+        reader.cancel();
       },
     });
 
-    // Pipe the activatorResponse.body directly into the archive
-    archive.append(exeStream, { name: "activator.exe" });
-
-    // Add token.txt from buffer
-    archive.append(link.tunnelToken, { name: "token.txt" });
-
-    // Finalize the archive
-    await archive.finalize();
-  } catch (err) {
-    console.error("Error creating archive:", err);
-    return new Response("Internal Server Error", { status: 500 });
+    // Prepare final response
+    return new Response(exeStream, {
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": `attachment; filename=${encodeURIComponent(
+          link.name
+        )}-activator.exe`,
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
+  } catch (error) {
+    console.error("[LINK_ACTIVATOR] Unexpected error:", error);
+    return new Response("Internal server error", { status: 500 });
   }
-
-  return response;
 }
