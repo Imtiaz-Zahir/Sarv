@@ -1,26 +1,13 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
-import Context from "./Context";
-
-const poppins = Poppins({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
-});
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Sarv - Connect your applications to the internet",
+  title: "Sarv",
   description:
-    "Sarv is a simple, fast, and secure way to connect your applications to the internet.",
-  openGraph: {
-    title: "Sarv - Connect your applications to the internet",
-    description:
-      "Sarv is a simple, fast, and secure way to connect your applications to the internet.",
-    type: "website",
-  },
+    "Expose your local web server to the world with a free public URL and SSL certificate. No configuration, no cost.",
 };
 
 export default function RootLayout({
@@ -30,17 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SessionProvider>
-        <body
-          className={`${poppins.className} antialiased max-w-[1920px] mx-auto`}
-        >
-          <Context>
-            <Nav />
-            {children}
-          </Context>
-        </body>
-      </SessionProvider>
-      <Analytics />
+      <body className="flex min-h-screen flex-col dark bg-gray-950 text-gray-50">
+        <SessionProvider>
+          <Header />
+          {children}
+          <Footer />
+        </SessionProvider>
+      </body>
     </html>
   );
 }

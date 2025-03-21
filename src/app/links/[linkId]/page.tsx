@@ -35,7 +35,7 @@ export default async function page({
   }
 
   return (
-    <section className="px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-28 lg:py-4 py-2 flex flex-col lg:flex-row justify-center gap-5 w-full">
+    <section className="px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-28 lg:py-4 py-2 flex flex-col lg:flex-row justify-center gap-5 w-full bg-white text-black">
       <div className="flex-1 w-full">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-800">

@@ -4,6 +4,7 @@ import {
   deleteDnsRecord,
   deleteTunnel,
   getTunnelConfiguration,
+  getTunnelToken,
   updateTunnelConfiguration,
 } from "@/services/cloudflare";
 import { getConnectionByName } from "@/services/connection";
@@ -20,72 +21,68 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 
 export async function createLinkAction(name: string) {
-  const session = await auth();
+  try {
+    const session = await auth();
 
-  if (!session?.user?.email) {
-    signOut();
-    redirect("/");
-  }
+    if (!session?.user?.email) {
+      signOut();
+      redirect("/");
+    }
 
-  const user = await getUsersByEmail(session.user?.email);
+    const user = await getUsersByEmail(session.user?.email);
 
-  if (!user) {
-    signOut();
-    redirect("/");
-  }
+    if (!user) {
+      signOut();
+      redirect("/");
+    }
 
-  const existingLink = await getLinkByName(name);
+    const existingLink = await getLinkByName(name);
 
-  if (existingLink)
+    if (existingLink)
+      return {
+        success: false,
+        message: "Link name already exists. Please choose a different name",
+      };
+
+    const tunnelSecret = randomBytes(32).toString("hex");
+    const tunnel = await createTunnel({ name, tunnelSecret });
+
+    if (!tunnel.id)
+      return {
+        success: false,
+        message: "Failed to create tunnel",
+      };
+
+    await updateTunnelConfiguration({
+      tunnelId: tunnel.id,
+      ingress: [
+        {
+          hostname: "",
+          service: "http_status:404",
+        },
+      ],
+    });
+
+    const tunnelToken = await getTunnelToken(tunnel.id);
+
+    const link = await createLink({
+      name,
+      tunnelToken,
+      tunnelId: tunnel.id,
+      userEmail: user.email,
+    });
+
+    return {
+      success: true,
+      link,
+    };
+  } catch (error) {
+    console.error(error);
     return {
       success: false,
-      message: "Link name already exists. Please choose a different name",
+      message: "Something went wrong. Please try again later.",
     };
-
-  const tunnelSecret = randomBytes(32).toString("hex");
-  const tunnel = (await createTunnel({ name, tunnelSecret })) as {
-    id: string;
-    account_tag: string;
-    created_at: string;
-    deleted_at: string;
-    name: string;
-    connections: string[];
-    conns_active_at: string;
-    conns_inactive_at: string;
-    tun_type: string;
-    metadata: Record<string, unknown>;
-    status: string;
-    remote_config: boolean;
-    credentials_file: {
-      AccountTag: string;
-      TunnelID: string;
-      TunnelName: string;
-      TunnelSecret: string;
-    };
-    token: string;
-  };
-
-  await updateTunnelConfiguration({
-    tunnelId: tunnel.id,
-    ingress: [
-      {
-        hostname: "",
-        service: "http_status:404",
-      },
-    ],
-  });
-
-  const link = await createLink({
-    name,
-    tunnelToken: tunnel.token,
-    tunnelId: tunnel.id,
-    userEmail: user.email,
-  });
-
-  return {
-    success: true,
-    link,
-  };
+  }
 }
 
 export async function deleteLinkAction(id: string) {
@@ -118,6 +115,12 @@ export async function deleteLinkAction(id: string) {
     };
 
   const tunnel = await getTunnelConfiguration(link.tunnelId);
+
+  if (!tunnel.config?.ingress)
+    return {
+      success: false,
+      message: "Tunnel not found",
+    };
 
   for (const ingress of tunnel.config.ingress) {
     const connection = await getConnectionByName({
@@ -190,4 +193,3 @@ export async function getCommandAction(linkId: string) {
     command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelToken}; Write-Host "setup completed"`,
   };
 }
-

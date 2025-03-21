@@ -1,4 +1,3 @@
-// import React from "react";
 import { auth, signOut } from "@/auth";
 import { getLinks } from "@/services/link";
 import { redirect } from "next/navigation";
@@ -16,9 +15,5 @@ export default async function Page() {
 
   const links = await getLinks(session?.user?.email);
 
-  redirect(
-    links.length > 0
-      ? "/links/" + links[0].id
-      : "/links/new"
-  );
+  redirect(links.length > 0 ? "/links/" + links[0].id : "/links/new");
 }

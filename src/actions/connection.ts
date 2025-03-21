@@ -83,6 +83,10 @@ export async function createConnectionAction({
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
+  if(!configuration?.config?.ingress) {
+    throw new Error("Failed to get tunnel configuration");
+  }
+
   const domainName = name + "-" + link.name + "." + rootDomain;
 
   await updateTunnelConfiguration({
@@ -169,6 +173,10 @@ export async function deleteConnectionAction(id: string) {
     };
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
+
+  if(!configuration?.config?.ingress) {
+    throw new Error("Failed to get tunnel configuration");
+  }
 
   const updatedIngress = configuration.config.ingress.filter(
     (ingress) =>
@@ -265,6 +273,10 @@ export async function updateConnectionAction(
   }
 
   const configuration = await getTunnelConfiguration(connection.link.tunnelId);
+
+  if(!configuration?.config?.ingress) {
+    throw new Error("Failed to get tunnel configuration");
+  }
 
   const updatedIngress = configuration.config.ingress.map((ingress) => {
     if (ingress.hostname.split("-")[0] === connection.name) {

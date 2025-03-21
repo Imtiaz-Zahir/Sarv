@@ -1,5 +1,4 @@
 "use client";
-import { useActiveLink } from "@/app/Context";
 import React from "react";
 
 export default function Activation({
@@ -10,11 +9,6 @@ export default function Activation({
   const [active, setActive] = React.useState<"installer" | "command">(
     "installer"
   );
-  const { setActiveLink } = useActiveLink();
-
-  React.useEffect(() => {
-    setActiveLink(tunnel.name);
-  }, [setActiveLink, tunnel.name]);
 
   const operatingSystems = [
     {
