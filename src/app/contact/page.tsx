@@ -177,7 +177,7 @@ function FaqSection() {
           />
           <FaqItem
             question="How do I report a security vulnerability?"
-            answer="Security is our top priority. Please email security@localexpose.com with details about the vulnerability. We follow responsible disclosure practices and will work with you to address any issues."
+            answer="Security is our top priority. Please email support@sarv.live with details about the vulnerability. We follow responsible disclosure practices and will work with you to address any issues."
           />
         </div>
       </div>

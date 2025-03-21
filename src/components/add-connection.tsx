@@ -18,7 +18,10 @@ import {
 } from "@/components/ui/dialog";
 import { createConnectionAction } from "@/actions/connection";
 
-const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localexpose.com";
+const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+if (!rootDomain) {
+  throw new Error("Root domain is not defined");
+}
 
 interface AddConnectionProps {
   link: {

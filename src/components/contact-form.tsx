@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { AlertCircle, CheckCircle2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function ContactForm() {
   const [formState, setFormState] = useState({
@@ -15,79 +15,94 @@ export default function ContactForm() {
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormState((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formState.name.trim()) {
-      newErrors.name = "Name is required"
+      newErrors.name = "Name is required";
     }
 
     if (!formState.email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
-      newErrors.email = "Please enter a valid email address"
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formState.subject.trim()) {
-      newErrors.subject = "Subject is required"
+      newErrors.subject = "Subject is required";
     }
 
     if (!formState.message.trim()) {
-      newErrors.message = "Message is required"
+      newErrors.message = "Message is required";
     } else if (formState.message.length < 10) {
-      newErrors.message = "Message must be at least 10 characters"
+      newErrors.message = "Message must be at least 10 characters";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    try {
+      e.preventDefault();
 
-    if (!validateForm()) {
-      return
+      if (!validateForm()) {
+        return;
+      }
+
+      setIsSubmitting(true);
+      throw new Error("Not implemented");
+
+      // Send form data to the server
+      // await fetch("/api/contact", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formState),
+      // });
+
+      // setIsSubmitted(true);
+      // setIsSubmitting(false);
+      // setFormState({
+      //   name: "",
+      //   email: "",
+      //   subject: "",
+      //   message: "",
+      // });
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+      setIsSubmitted(false);
+
+      // Show error message
+      setErrors({
+        message: "Failed to send message. Please try again later.",
+      });
     }
-
-    setIsSubmitting(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSubmitted(true)
-      setFormState({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      })
-
-      // Reset form after 5 seconds
-      setTimeout(() => {
-        setIsSubmitted(false)
-      }, 5000)
-    }, 1500)
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -97,9 +112,12 @@ export default function ContactForm() {
         <div className="bg-green-900/30 border border-green-800 rounded-lg p-4 flex items-start">
           <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
           <div>
-            <h4 className="text-sm font-medium text-green-400">Message sent successfully!</h4>
+            <h4 className="text-sm font-medium text-green-400">
+              Message sent successfully!
+            </h4>
             <p className="text-sm text-gray-400 mt-1">
-              Thank you for reaching out. We&apos;ll get back to you as soon as possible.
+              Thank you for reaching out. We&apos;ll get back to you as soon as
+              possible.
             </p>
           </div>
         </div>
@@ -212,6 +230,5 @@ export default function ContactForm() {
         </>
       )}
     </form>
-  )
+  );
 }
-

@@ -26,7 +26,7 @@ function HeroSection() {
             <ExternalLink className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-            About LocalExpose
+            About Sarv
           </h1>
           <p className="text-xl text-gray-400 max-w-[700px]">
             We&apos;re on a mission to make web development easier by removing the
@@ -51,7 +51,7 @@ function MissionSection() {
               Empowering developers to build without boundaries
             </h2>
             <p className="text-gray-400 md:text-lg">
-              At LocalExpose, we believe that development should be seamless,
+              At Sarv, we believe that development should be seamless,
               whether you&apos;re working locally or sharing globally. Our mission is
               to eliminate the technical barriers that slow down development and
               collaboration.
@@ -125,7 +125,7 @@ function StorySection() {
             From frustration to innovation
           </h2>
           <p className="text-gray-400 md:text-lg">
-            LocalExpose was born out of the frustration experienced by
+            Sarv was born out of the frustration experienced by
             developers trying to share their local work with clients and
             teammates.
           </p>
@@ -182,7 +182,7 @@ function StorySection() {
                 Today: Empowering Developers
               </h3>
               <p className="text-gray-400">
-                LocalExpose now serves hundreds of thousands of developers
+                Sarv now serves hundreds of thousands of developers
                 worldwide, from freelancers to enterprise teams. We remain
                 committed to our original mission: making web development easier
                 by bridging the gap between local and global.
@@ -305,7 +305,7 @@ function ContactSection() {
           </h2>
           <p className="text-gray-400 md:text-lg">
             Our team is always available to answer your questions and help you
-            get the most out of LocalExpose.
+            get the most out of Sarv.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <Button

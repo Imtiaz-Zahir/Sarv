@@ -75,7 +75,7 @@ function HeroSection() {
                 <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
                 <div className="h-3 w-3 rounded-full bg-green-500"></div>
                 <div className="ml-2 flex-1 bg-gray-800 rounded h-6 flex items-center px-3">
-                  <p className="text-xs text-gray-400">LocalExpose Dashboard</p>
+                  <p className="text-xs text-gray-400">Sarv Dashboard</p>
                 </div>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 h-[250px] overflow-hidden">
@@ -92,7 +92,7 @@ function HeroSection() {
                   <div className="bg-gray-900 rounded p-2 flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-white">
-                        myapp.localexpose.com
+                        myapp.sarv.live
                       </p>
                       <p className="text-xs text-gray-400">→ localhost:3000</p>
                     </div>
@@ -104,7 +104,7 @@ function HeroSection() {
                   <div className="bg-gray-900 rounded p-2 flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-white">
-                        api.localexpose.com
+                        api.sarv.live
                       </p>
                       <p className="text-xs text-gray-400">→ localhost:8080</p>
                     </div>
@@ -116,7 +116,7 @@ function HeroSection() {
                   <div className="bg-gray-900 rounded p-2 flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-white">
-                        demo.localexpose.com
+                        demo.sarv.live
                       </p>
                       <p className="text-xs text-gray-400">→ localhost:5000</p>
                     </div>
@@ -163,7 +163,7 @@ function HowItWorksSection() {
             </h3>
             <p className="text-center text-gray-400">
               Create a free account and choose your custom subdomain (e.g.,
-              myapp.localexpose.com) from our dashboard.
+              myapp.sarv.live) from our dashboard.
             </p>
           </div>
           <div className="flex flex-col items-center space-y-4 rounded-lg border border-gray-800 bg-gray-950/50 p-6 shadow-lg backdrop-blur transition-all">
@@ -353,7 +353,7 @@ function UseCasesSection() {
               Perfect for developers and teams
             </h2>
             <p className="max-w-[900px] text-gray-400 text-base sm:text-lg md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Discover how LocalExpose can help in various development
+              Discover how Sarv can help in various development
               scenarios.
             </p>
           </div>
@@ -518,7 +518,7 @@ function CtaSection() {
               Ready to expose your local server?
             </h2>
             <p className="max-w-[600px] text-gray-400 text-base sm:text-lg md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Join thousands of developers who are already using LocalExpose to
+              Join thousands of developers who are already using Sarv to
               share their work with the world.
             </p>
           </div>
