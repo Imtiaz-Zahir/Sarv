@@ -120,3 +120,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar for Dark Theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e; /* Dark background */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a90e2, #008cff); /* Gradient effect */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #357abd, #008cff); /* Hover effect */
+}
