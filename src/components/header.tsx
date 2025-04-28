@@ -12,32 +12,39 @@ export default function Header() {
       </Link>
       <nav className="hidden md:flex gap-6">
         <Link
-          href="#how-it-works"
+          href="/#how-it-works"
           title="How It Works"
           className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           How It Works
         </Link>
         <Link
-          href="#features"
+          href="/#features"
           title="Features"
           className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           Features
         </Link>
         <Link
-          href="#use-cases"
+          href="/#use-cases"
           title="Use Cases"
           className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           Use Cases
         </Link>
         <Link
-          href="#faq"
+          href="/#faq"
           title="FAQ"
           className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           FAQ
+        </Link>
+        <Link
+          href="/plans"
+          title="Plans"
+          className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+        >
+          Plans
         </Link>
       </nav>
       <Profile />
