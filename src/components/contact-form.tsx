@@ -1,13 +1,13 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { createContactAction } from "@/actions/contact";
 
 export default function ContactForm() {
   const [formState, setFormState] = useState({
@@ -64,7 +64,7 @@ export default function ContactForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
 
@@ -73,25 +73,27 @@ export default function ContactForm() {
       }
 
       setIsSubmitting(true);
-      throw new Error("Not implemented");
 
-      // Send form data to the server
-      // await fetch("/api/contact", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(formState),
-      // });
-
-      // setIsSubmitted(true);
-      // setIsSubmitting(false);
-      // setFormState({
-      //   name: "",
-      //   email: "",
-      //   subject: "",
-      //   message: "",
-      // });
+      const response = await createContactAction({
+        name: formState.name,
+        email: formState.email,
+        subject: formState.subject,
+        message: formState.message,
+      });
+      if (!response.success) {
+        setErrors({ message: response.message });
+        setIsSubmitting(false);
+        return;
+      }
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setFormState({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+      setErrors({});
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
@@ -215,7 +217,7 @@ export default function ContactForm() {
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 cursor-pointer"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

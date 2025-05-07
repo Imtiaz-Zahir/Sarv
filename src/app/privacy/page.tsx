@@ -196,7 +196,7 @@ function PrivacyContentSection() {
                   contact us:
                 </p>
                 <ul className="list-disc pl-6 text-gray-400 mb-4">
-                  <li>By email: privacy@sarv.live</li>
+                  <li>By email: support@sarv.live</li>
                   <li>
                     By visiting the contact page on our website:
                     sarv.live/contact

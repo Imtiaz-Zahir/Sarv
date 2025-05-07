@@ -13,17 +13,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AlertCircle, ExternalLink, LinkIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import PaymentComponent from "@/components/PaymentComponent";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 if (!rootDomain)
   throw new Error("Missing NEXT_PUBLIC_ROOT_DOMAIN environment variable");
 
 export default function CreateLinkPage() {
-  const router = useRouter();
   const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [link, setLink] = useState<{
+    id: string;
+    name: string;
+    tunnelId: string;
+    tunnelToken: string;
+    userEmail: string;
+  } | null>(null);
 
   async function handleAddLink(e: React.FormEvent) {
     try {
@@ -48,15 +54,23 @@ export default function CreateLinkPage() {
       }
 
       if (response.link) {
+        setLink(response.link);
         setLoading(false);
         setName("");
-        router.push("/links/" + response.link.id);
       }
     } catch (error) {
       console.error(error);
       setLoading(false);
       setError("Something went wrong. Please try again later.");
     }
+  }
+
+  if (link) {
+    return <PaymentComponent
+      linkId={link.id}
+      linkName={link.name}
+      userEmail={link.userEmail}
+    />;
   }
 
   return (

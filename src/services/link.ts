@@ -54,6 +54,8 @@ export async function getLinkById(id: string, takeConnections = true) {
       userEmail: true,
       tunnelId: true,
       tunnelToken: true,
+      subscriptionEndAt: true,
+      subscriptionStatus: true,
       createdAt: true,
       connections: takeConnections
         ? {
@@ -77,6 +79,27 @@ export async function deleteLink(id: string) {
   return prisma.links.delete({
     where: {
       id,
+    },
+  });
+}
+
+export async function updateLink(
+  id: string,
+  {
+    subscriptionEndAt,
+    subscriptionStatus,
+  }: {
+    subscriptionEndAt?: Date | null;
+    subscriptionStatus?: string;
+  }
+) {
+  return prisma.links.update({
+    where: {
+      id,
+    },
+    data: {
+      subscriptionEndAt,
+      subscriptionStatus,
     },
   });
 }

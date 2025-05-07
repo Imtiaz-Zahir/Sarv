@@ -158,38 +158,3 @@ export async function getLinksAction() {
     links,
   };
 }
-
-export async function getCommandAction(linkId: string) {
-  const session = await auth();
-
-  if (!session?.user?.email) {
-    signOut();
-    redirect("/");
-  }
-
-  const user = await getUsersByEmail(session.user?.email);
-
-  if (!user) {
-    signOut();
-    redirect("/");
-  }
-
-  const link = await getLinkById(linkId);
-
-  if (!link)
-    return {
-      success: false,
-      message: "Link not found",
-    };
-
-  if (link.userEmail !== user.email)
-    return {
-      success: false,
-      message: "You do not have permission to get the command",
-    };
-
-  return {
-    success: true,
-    command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service install ${link.tunnelToken}; Write-Host "setup completed"`,
-  };
-}

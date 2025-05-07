@@ -72,6 +72,22 @@ export async function createConnectionAction({
       message: "Unauthorized",
     };
 
+  if (!link.subscriptionEndAt) {
+    return {
+      success: false,
+      message:
+        "Your subscription has expired. Please renew your subscription to create a new connection",
+    };
+  }
+
+  if (link.subscriptionEndAt > new Date()) {
+    return {
+      success: false,
+      message:
+        "Your subscription has expired. Please renew your subscription to create a new connection",
+    };
+  }
+
   const existingConnection = await getConnectionByName({ name, linkId });
 
   if (existingConnection) {
@@ -83,7 +99,7 @@ export async function createConnectionAction({
 
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
-  if(!configuration?.config?.ingress) {
+  if (!configuration?.config?.ingress) {
     throw new Error("Failed to get tunnel configuration");
   }
 
@@ -172,9 +188,25 @@ export async function deleteConnectionAction(id: string) {
       message: "You are not authorized to delete this connection",
     };
 
+    if (!link.subscriptionEndAt) {
+      return {
+        success: false,
+        message:
+          "Your subscription has expired. Please renew your subscription to create a new connection",
+      };
+    }
+  
+    if (link.subscriptionEndAt > new Date()) {
+      return {
+        success: false,
+        message:
+          "Your subscription has expired. Please renew your subscription to create a new connection",
+      };
+    }
+
   const configuration = await getTunnelConfiguration(link.tunnelId);
 
-  if(!configuration?.config?.ingress) {
+  if (!configuration?.config?.ingress) {
     throw new Error("Failed to get tunnel configuration");
   }
 
@@ -257,6 +289,22 @@ export async function updateConnectionAction(
     };
   }
 
+  if (!connection.link.subscriptionEndAt) {
+    return {
+      success: false,
+      message:
+        "Your subscription has expired. Please renew your subscription to create a new connection",
+    };
+  }
+
+  if (connection.link.subscriptionEndAt > new Date()) {
+    return {
+      success: false,
+      message:
+        "Your subscription has expired. Please renew your subscription to create a new connection",
+    };
+  }
+
   if (name) {
     const existingConnection = await getConnectionByName({
       name,
@@ -274,7 +322,7 @@ export async function updateConnectionAction(
 
   const configuration = await getTunnelConfiguration(connection.link.tunnelId);
 
-  if(!configuration?.config?.ingress) {
+  if (!configuration?.config?.ingress) {
     throw new Error("Failed to get tunnel configuration");
   }
 

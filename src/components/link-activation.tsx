@@ -11,7 +11,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
-  AlertTriangle,
   Copy,
   Download,
   Terminal,
@@ -34,6 +33,11 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
 
   const operatingSystems = [
     {
+      name: "macOS",
+      icon: <Apple className="h-5 w-5" />,
+      command: `brew install cloudflared && sudo cloudflared service install ${tunnel.token}`,
+    },
+    {
       name: "Windows",
       icon: <Windows className="h-5 w-5" />,
       installer: {
@@ -41,11 +45,6 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
         downloadLink: `/api/download/${tunnel.id}`,
       },
       command: `winget install --id Cloudflare.cloudflared; cloudflared.exe service uninstall; cloudflared.exe service install ${tunnel.token}`,
-    },
-    {
-      name: "macOS",
-      icon: <Apple className="h-5 w-5" />,
-      command: `brew install cloudflared && sudo cloudflared service install ${tunnel.token}`,
     },
     {
       name: "Linux",
@@ -92,7 +91,7 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="installer" className="w-full">
+        <Tabs defaultValue="command" className="w-full">
           <TabsList className="grid grid-cols-2 mb-4 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="installer"
@@ -116,7 +115,7 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
                 Download the installer for your operating system
               </p>
 
-              <Alert
+              {/* <Alert
                 variant="default"
                 className="bg-amber-950/30 border-amber-800 text-amber-300"
               >
@@ -126,7 +125,7 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
                   Some antivirus software might temporarily flag our installer
                   as suspicious. If this occurs, please download the file again.
                 </AlertDescription>
-              </Alert>
+              </Alert> */}
 
               {operatingSystems.map(
                 (os) =>
@@ -165,10 +164,6 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
 
           <TabsContent value="command">
             <div className="space-y-4">
-              <p className="text-sm text-gray-300">
-                Run the following command in your terminal as an administrator
-              </p>
-
               <Alert
                 variant="default"
                 className="bg-blue-950/30 border-blue-800 text-blue-300"
@@ -191,17 +186,32 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
                         {os.icon}
                         <h5 className="font-medium text-white">{os.name}</h5>
                       </div>
-                      <div className="relative mt-2 bg-gray-900 border border-gray-700 rounded-lg p-3">
-                        <div className="text-xs font-medium rounded text-gray-400 absolute -top-2 left-2 bg-gray-900 px-1">
+                      <div className="relative mt-2 bg-gray-900 border border-gray-700 rounded-lg py-3 pl-3 pr-1">
+                        <span className="text-xs font-medium rounded text-gray-400 absolute -top-2 left-2 bg-gray-900 px-1">
                           Command:
-                        </div>
-                        <div className="pt-1 pb-1 pr-16 overflow-x-auto text-sm text-gray-300 font-mono whitespace-pre-wrap break-all h-16 overflow-y-auto ">
+                        </span>
+                        <p className="py-1 overflow-x-auto text-sm text-gray-300 font-mono whitespace-pre-wrap break-all h-10 overflow-y-auto ">
                           {os.command}
-                        </div>
-                        <Button
+                        </p>
+                        <span
+                          className={`text-xs font-medium rounded text-gray-400 absolute -bottom-2 right-2 bg-gray-900 px-1 flex items-center gap-1 ${
+                            copied !== os.name ? "cursor-pointer" : ""
+                          }`}
+                          onClick={() => handleCopy(os.command, os.name)}
+                        >
+                          {copied === os.name ? (
+                            "Copied!"
+                          ) : (
+                            <>
+                              <Copy className="h-2 w-2" />
+                              Copy
+                            </>
+                          )}
+                        </span>
+                        {/* <Button
                           size="sm"
                           variant="ghost"
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white hover:bg-gray-700 cursor-pointer"
+                          className="absolute right-2 top-1/2 transform translate-y-1/2 text-gray-400 hover:text-white hover:bg-gray-700 cursor-pointer"
                           onClick={() => handleCopy(os.command, os.name)}
                         >
                           {copied === os.name ? (
@@ -212,7 +222,7 @@ export default function LinkActivation({ tunnel }: ActivationProps) {
                               Copy
                             </>
                           )}
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   )

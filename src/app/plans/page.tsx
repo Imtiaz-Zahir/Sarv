@@ -25,7 +25,7 @@ function PricingHeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-gray-950 to-gray-950"></div>
       <div className="container px-4 sm:px-6 lg:px-8 mx-auto relative z-10">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 h-20">
             Simple, Transparent Pricing
           </h1>
           <p className="max-w-[600px] text-base sm:text-lg text-gray-400 md:text-xl">
@@ -55,7 +55,7 @@ function PricingPlanSection() {
               </CardTitle>
               <div className="flex justify-center items-baseline mt-4">
                 <span className="text-5xl font-bold tracking-tight text-white">
-                  $10
+                  $25
                 </span>
                 <span className="text-gray-400 ml-1 text-lg">/month</span>
               </div>
@@ -94,12 +94,6 @@ function PricingPlanSection() {
                     <Check className="h-4 w-4 text-white" />
                   </div>
                   <span className="text-gray-300">Web dashboard</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-1 mr-3">
-                    <Check className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-gray-300">Real-time statistics</span>
                 </li>
                 <li className="flex items-center">
                   <div className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-1 mr-3">
@@ -203,7 +197,7 @@ function PricingFaqSection() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-400">
-                Currently, we offer just one Pro Plan at $10/month. If we
+                Currently, we offer just one Pro Plan at $25/month. If we
                 introduce additional plans in the future, we&apos;ll provide
                 simple options to upgrade or downgrade your subscription.
               </p>

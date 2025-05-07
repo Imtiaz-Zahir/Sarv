@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LinkIcon } from "lucide-react";
+import PaymentComponent from "@/components/PaymentComponent";
 
 export default async function LinkManagementPage({
   params,
@@ -31,6 +32,20 @@ export default async function LinkManagementPage({
 
   if (link.userEmail !== session.user.email) {
     return <div>Unauthorized</div>;
+  }
+
+  if (
+    !link.subscriptionStatus ||
+    !link.subscriptionEndAt ||
+    link.subscriptionEndAt < new Date()
+  ) {
+    return (
+      <PaymentComponent
+        linkId={link.id}
+        linkName={link.name}
+        userEmail={link.userEmail}
+      />
+    );
   }
 
   return (
