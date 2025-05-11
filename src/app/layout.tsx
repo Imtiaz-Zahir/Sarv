@@ -3,7 +3,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Sarv",
@@ -24,7 +24,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </SessionProvider>
-        <Analytics mode="production" />;
+        <Analytics mode="production" />
       </body>
     </html>
   );

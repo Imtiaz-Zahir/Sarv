@@ -46,6 +46,20 @@ type SubscriptionEvents =
   | SubscriptionImportedEvent;
 
 async function handelWebhookEvent(eventData: SubscriptionEvents) {
+  const paddleProductId = process.env.PADDLE_PRODUCT_Id;
+  if (!paddleProductId) {
+    throw new Error("Missing PADDLE_PRODUCT_Id environment variable");
+  }
+
+  const eventProductId = eventData.data.items[0].product?.id;
+
+  if (eventProductId !== paddleProductId) {
+    return NextResponse.json(
+      { error: "Product id mismatch" },
+      { status: 400 }
+    );
+  }
+
   if (!eventData.data.customData) {
     return NextResponse.json(
       { error: "Custom Data not found" },
