@@ -57,28 +57,28 @@ async function handelWebhookEvent(eventData: SubscriptionEvents) {
     console.error(
       `Product id mismatch: ${eventProductId} !== ${paddleProductId}`
     );
+  } else {
+    if (!eventData.data.customData) {
+      throw new Error("Custom Data missing");
+    }
+
+    if (
+      typeof eventData.data.customData !== "object" ||
+      !("linkId" in eventData.data.customData) ||
+      typeof eventData.data.customData.linkId !== "string"
+    ) {
+      throw new Error("linkId not found in customData");
+    }
+
+    const linkId = eventData.data.customData?.linkId;
+
+    await updateLink(linkId, {
+      subscriptionEndAt: eventData.data.currentBillingPeriod?.endsAt
+        ? new Date(eventData.data.currentBillingPeriod?.endsAt)
+        : null,
+      subscriptionStatus: eventData.data.status,
+    });
   }
-
-  if (!eventData.data.customData) {
-    throw new Error("Custom Data missing");
-  }
-
-  if (
-    typeof eventData.data.customData !== "object" ||
-    !("linkId" in eventData.data.customData) ||
-    typeof eventData.data.customData.linkId !== "string"
-  ) {
-    throw new Error("linkId not found in customData");
-  }
-
-  const linkId = eventData.data.customData?.linkId;
-
-  await updateLink(linkId, {
-    subscriptionEndAt: eventData.data.currentBillingPeriod?.endsAt
-      ? new Date(eventData.data.currentBillingPeriod?.endsAt)
-      : null,
-    subscriptionStatus: eventData.data.status,
-  });
 }
 
 const subscriptionEvents = [
