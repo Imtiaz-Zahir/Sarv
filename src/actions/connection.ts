@@ -80,7 +80,7 @@ export async function createConnectionAction({
     };
   }
 
-  if (link.subscriptionEndAt > new Date()) {
+  if (link.subscriptionEndAt < new Date()) {
     return {
       success: false,
       message:
@@ -196,7 +196,7 @@ export async function deleteConnectionAction(id: string) {
       };
     }
   
-    if (link.subscriptionEndAt > new Date()) {
+    if (link.subscriptionEndAt < new Date()) {
       return {
         success: false,
         message:
@@ -297,7 +297,7 @@ export async function updateConnectionAction(
     };
   }
 
-  if (connection.link.subscriptionEndAt > new Date()) {
+  if (connection.link.subscriptionEndAt < new Date()) {
     return {
       success: false,
       message:
