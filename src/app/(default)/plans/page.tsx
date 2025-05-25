@@ -117,7 +117,7 @@ function PricingPlanSection() {
                 size="lg"
                 asChild
               >
-                <Link href="/signup">Subscribe Now</Link>
+                <Link href="/login">Subscribe Now</Link>
               </Button>
             </CardFooter>
           </Card>
