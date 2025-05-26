@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import Payment from "./payment";
+import Link from "next/link";
 
 export default async function ProxyDetailsPage({
   searchParams,
@@ -109,7 +110,14 @@ export default async function ProxyDetailsPage({
           ) : (
             <Payment proxyId={id} userEmail={data.userEmail} />
           )}
-
+          <Link href="https://www.proxymailer.online/dashboard">
+            <button
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-md transition duration-200 cursor-pointer"
+              type="button"
+            >
+              Back to Dashboard
+            </button>
+          </Link>
           <p className="text-center mt-6 text-blue-400 hover:text-blue-300 text-sm">
             Need help? Contact us at support@proxymailer.online
           </p>

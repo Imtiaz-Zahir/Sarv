@@ -79,6 +79,7 @@ export default function Payment({
           theme: "dark",
         },
       });
+      setLoading(false);
     } catch (error) {
       console.error(error);
       setError("Failed to open payment form. Please try again later.");
