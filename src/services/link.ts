@@ -6,11 +6,15 @@ export async function createLink({
   userEmail,
   tunnelId,
   tunnelToken,
+  subscriptionEndAt,
+  subscriptionStatus,
 }: {
   name: string;
   userEmail: string;
   tunnelId: string;
   tunnelToken: string;
+  subscriptionStatus?: string | null;
+  subscriptionEndAt?: Date | null;
 }) {
   return prisma.links.create({
     data: {
@@ -18,6 +22,8 @@ export async function createLink({
       userEmail,
       tunnelId,
       tunnelToken,
+      subscriptionStatus,
+      subscriptionEndAt,
     },
   });
 }

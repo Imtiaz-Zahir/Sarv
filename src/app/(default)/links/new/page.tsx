@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { AlertCircle, ExternalLink, LinkIcon } from "lucide-react";
 import PaymentComponent from "@/components/PaymentComponent";
+import Link from "next/link";
 
 const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 if (!rootDomain)
@@ -29,6 +30,10 @@ export default function CreateLinkPage() {
     tunnelId: string;
     tunnelToken: string;
     userEmail: string;
+    subscriptionStatus: string | null;
+    subscriptionEndAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
   } | null>(null);
 
   async function handleAddLink(e: React.FormEvent) {
@@ -66,11 +71,14 @@ export default function CreateLinkPage() {
   }
 
   if (link) {
-    return <PaymentComponent
-      linkId={link.id}
-      linkName={link.name}
-      userEmail={link.userEmail}
-    />;
+    return (
+      <PaymentComponent
+        linkId={link.id}
+        linkName={link.name}
+        userEmail={link.userEmail}
+        trial
+      />
+    );
   }
 
   return (
@@ -152,7 +160,7 @@ export default function CreateLinkPage() {
                   </div>
                 )}
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col space-y-2">
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 mt-2 cursor-pointer"
@@ -167,6 +175,12 @@ export default function CreateLinkPage() {
                     "Create Link"
                   )}
                 </Button>
+                <Link
+                  href="/links"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 mt-2 p-2 rounded-lg text-center cursor-pointer"
+                >
+                  My Existing Links
+                </Link>
               </CardFooter>
             </form>
           </Card>

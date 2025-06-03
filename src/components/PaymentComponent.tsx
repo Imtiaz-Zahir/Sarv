@@ -10,20 +10,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
+import { useRouter } from "next/navigation";
 
 export default function PaymentComponent({
   linkId,
   linkName,
   userEmail,
+  trial = false,
 }: {
   linkId: string;
   linkName: string;
   userEmail: string;
+  trial?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [error, setError] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const router = useRouter();
 
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
   if (!rootDomain) {
@@ -34,12 +38,12 @@ export default function PaymentComponent({
     const currentUrl = window.location.href;
     if (currentUrl.includes("success=true")) {
       setPaymentSuccess(true);
-      setTimeout(
-        () => window.location.reload(),
-        30000
-      );
+      setTimeout(() => window.location.reload(), 30000);
       return;
     }
+
+    if (trial) return;
+
     try {
       const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
       if (!clientToken) {
@@ -75,9 +79,14 @@ export default function PaymentComponent({
       setError("Failed to initialize payment system. Please try again later.");
       setLoading(false);
     }
-  }, []);
+  }, [trial]);
 
   const handleSubscribe = async () => {
+    if (trial) {
+      router.push(`/links/${linkId}?success=true`);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -153,13 +162,13 @@ export default function PaymentComponent({
             <div>
               <CardTitle className="text-white text-lg">Pro Plan</CardTitle>
               <CardDescription className="text-gray-400 text-sm">
-                $25/month after 7-day free trial
+                $25/month {trial && "after 7-day free trial"}
               </CardDescription>
             </div>
             <div className="bg-cyan-500/20 py-1 px-3 rounded-full">
               <span className="text-xs font-medium text-cyan-400 flex items-center">
                 <Zap className="h-3 w-3 mr-1" />
-                7-DAY FREE
+                {trial ? "7-DAY FREE" : "PRO PLAN"}
               </span>
             </div>
           </div>
@@ -211,7 +220,7 @@ export default function PaymentComponent({
                 Try Again
               </Button>
             </div>
-          ) : !paddle ? (
+          ) : !paddle && !trial ? (
             <div className="flex justify-center py-4">
               <div className="inline-block h-6 w-6 animate-spin rounded-full border-3 border-solid border-cyan-400 border-r-transparent"></div>
             </div>
@@ -226,8 +235,10 @@ export default function PaymentComponent({
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent mr-2"></div>
                   <span>Processing...</span>
                 </div>
-              ) : (
+              ) : trial ? (
                 "Start Free Trial"
+              ) : (
+                "Subscribe Now"
               )}
             </Button>
           )}
@@ -242,10 +253,15 @@ export default function PaymentComponent({
               <span>14-day Money Back</span>
             </div>
           </div>
-          
-          <div className="mt-4 text-xs text-center text-gray-400">
-            <p>Your first 7 days are completely free. You won&apos;t be charged until the trial ends.</p>
-          </div>
+
+          {trial && (
+            <div className="mt-4 text-xs text-center text-gray-400">
+              <p>
+                Your first 7 days are completely free. You won&apos;t be charged
+                until the trial ends.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

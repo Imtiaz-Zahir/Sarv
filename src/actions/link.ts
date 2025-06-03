@@ -70,6 +70,8 @@ export async function createLinkAction(name: string) {
       tunnelToken,
       tunnelId: tunnel.id,
       userEmail: user.email,
+      subscriptionEndAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      subscriptionStatus: "trialing",
     });
 
     return {
