@@ -101,7 +101,7 @@ export default async function ProxyDetailsPage({
           {/* Subscription Price Display */}
           <div className="text-center bg-gray-700 rounded-lg p-4">
             <p className="text-gray-300">Subscription Price</p>
-            <p className="text-xl font-bold text-blue-400">$10/month</p>
+            <p className="text-xl font-bold text-blue-400">$25/month</p>
           </div>
 
           {data.subscriptionEndAt &&
